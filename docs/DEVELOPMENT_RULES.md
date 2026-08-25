@@ -64,3 +64,28 @@ Poseを後から編集できることを守る。
 - 既存の中心ループを壊さないか？
 - 外部ツールに任せた方が良くないか？
 - v0.1で本当に必要か？
+
+## 11. Agent Handoffは必須
+
+Codex / Claude / ChatGPT等、担当エージェントは作業を終了または中断する前に、Repository rootの `HANDOFF.md` を必ず更新する。
+
+最低限、4Wを残す。
+
+- **What**: 何をしたか
+- **Why**: なぜそうしたか
+- **Where**: どのファイル・箇所を変更したか
+- **What's Next**: 次に何をするか
+
+加えて以下を記録する。
+
+- Changed Files
+- Verification（Build / Test / Manual check）
+- Known Issues / Open Questions
+- Important Decisions
+- 次担当への注意事項
+
+未完了でも現在地点を残す。制限・エラー・時間切れが予想される場合は、実装を続けて記録を失うより `HANDOFF.md` の更新を優先する。
+
+次担当者が過去のチャット履歴を再読しなくてもRepositoryだけで作業を再開できる状態を完成条件とする。
+
+重要な設計変更を行った場合は `HANDOFF.md` だけでなく、対応する `docs/` も同時に更新する。
