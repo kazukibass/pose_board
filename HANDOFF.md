@@ -10,17 +10,66 @@
 ## Current Status
 
 - Phase: Phase 0 — Technical PoC
-- Status: 実装前 / 仕様策定済み
-- Last updated: 2026-08-25
-- Last agent: ChatGPT
+- Status: 最小実装済み / Test・Build・HTTP配信確認済み
+- Last updated: 2026-08-26
+- Last agent: Codex
 
 ## What — 何をしたか
 
-- READMEおよびdocs配下にv0.1仕様を作成。
-- Primitive Rig、Frame、Playback、2D Background、Overlay、Save/Load、Exportの方針を定義。
-- Desktop/Mobile双方のUI要件を定義。
-- Playback UIはSVGアイコンを用いた音楽プレイヤー型を採用。
-- Phase 0ではHuman primitive rig → Pose → Frame保存/複製 → Flipbook再生までを通す方針。
+- Vite + React + TypeScript + React Three Fiberの最小Webアプリ構成を追加。
+- Three.jsプリミティブで階層型Human Rigを実装。
+- Stage上またはリストから主要関節を選択し、XYZスライダーで回転できるUIを実装。
+- 可変長Frame Stateの追加・複製・削除・選択を実装。
+- SVG音楽プレイヤー型UIでPrevious / Next / First / Play / Pause、FPS、Loop再生を実装。
+- Wide/CompactのレスポンシブUIと、Poseモデルの単体テストを追加。
+- 起動時に8コマの歩行サンプルを追加。
+- UIの英語／日本語切替を追加。
+- モデル全体のXYZ回転を追加し、現在コマのみ／全コマ一括の適用範囲を選択可能にした。
+- 関節回転にも現在コマのみ／全コマ一括の適用範囲を追加。
+- 関節と全身のXYZ回転にdegree数値入力を追加。
+- Rig一覧を顔・左右腕・体・左右脚の折りたたみ階層表示へ変更。グループ見出し選択時は階層Rootを選択する。
+- 選択関節マーカーをdepth test非依存のオレンジ色リングへ変更し、モデル裏側でも視認可能にした。
+- Desktop Layoutを100dvh内へ固定し、Stage / Player / Timelineを維持したまま左右パネル内だけスクロールするよう調整。
+- 初期言語を`navigator.language`から自動判定（`ja*`は日本語、それ以外は英語）。手動切替も維持。
+- 関節・全身の編集は常に現在コマだけに限定し、「現在値を全コマへ適用」ボタンでのみ一括反映する安全な操作へ変更。
+- 直前の一括適用を復元するUndoを追加。
+- Editing Viewと固定Output Cameraを分離し、Stage内にCameraHelperによる画角モックと視点リセットを追加。
+- 固定Output Cameraからの現在コマPNG出力と、Rig階層・Camera・全Frame Stateを含むJSON出力を追加。
+- 全コマを固定Output Cameraから連番PNG（`frame-001.png`形式）としてレンダリングし、ブラウザ内でZIP出力する導線を追加。
+- PNG/ZIP出力から選択マーカー、Grid、CameraHelper等のEditor専用表示を除外。
+- ArrowLeft / ArrowRightで前後Frameへ移動可能。端ではLoop ONなら反対端へ、OFFなら端で停止。
+- PlayerのPrevious / Nextを線なし三角、First / Lastを線付き三角として統一し、Lastボタンを追加。
+- 一括適用専用Undoを廃止し、Pose回転・全身回転・Reset・全コマ適用・Frame追加/複製/削除を対象に最大50段のUndo / Redo履歴を追加。
+- Sliderは1回のFocus操作を1履歴として記録し、ドラッグ中の大量履歴生成を防止。
+- 外部3D Assetを追加せず、プリミティブで三脚付き業務用カメラMockを構築。Output Camera位置とCameraHelperに一致させた。
+- Camera MockのLensをActor方向へ180度反転。再生中は自動非表示、Stage左上の「カメラ」ボタンから手動表示切替可能。
+- 動作サンプルSelectorを追加。「歩く」と、ZIP差分確認用にPose/Actor回転が大きく変わる「激しい動作」を選択可能。
+- 歩行サンプルの腕をY=60°基準、X=-100°〜-50°の反対振りへ修正し、肘を曲げて手を頭の斜め下へ配置。
+- 全回転Sliderの中央に0°ガイドを追加し、Focus中は強調表示。
+- ZIP出力時のFrame更新を`flushSync`で確定してから2 RAF待機し、同一画像が繰り返される問題へ対処。
+- Project JSON読込を追加。Frame/Bone/Rotationを正規化し、欠損actorRotationは0で補完。不正データでは現在状態を維持。
+- TimelineサムネイルのHTML Drag & Drop並べ替えを追加。選択Frame IDを維持し、Undo / Redo対象にした。
+- Primitive Human Rig専用Shaderを追加。Rig Local +Zを正面、-Zを背面とし、背中側のMaterial明度を約58%まで段階的に落として前後を識別可能にした。外部Modelには適用しない。
+- Rig Rest PoseをProject JSONの`rig.restPose`として保存・復元し、関節Resetを固定0°ではなくImport時Rest Rotationへ戻す処理へ変更。旧JSONでは0°を補完。
+- 選択関節Markerへ0°基準のLocal Axisを追加（X=赤、Y=緑、Z=青）。選択Bone自身のQuaternionを打ち消すため、Bone回転後も親座標系の0°基準位置に残る。
+- Local Axis直線を短く細い半透明Guideへ調整し、Marker球面の周囲へ正方向を示すXYZ色別の円弧矢印を追加。Editor専用で画像出力には含めない。
+- Rotation円弧をさらに細線化（tube 0.006）し、直線Axisより円弧矢印をPrimary Guideに調整。
+- Camera Control PanelをStage左上へ追加。Camera Mock表示切替、Output Camera一致視点、見下ろす3人称視点、Zoom 0.6x〜2.0、横16:9/縦9:16を操作可能。
+- Output CameraをActor全身が収まりやすい`(0, 1.1, 8.2)`へ移動し、targetを`(0, 0.1, 0)`へ変更。Camera Mockも位置・下向き角度を同期。
+- PNG/ZIPを選択比率の実寸（横1280x720 / 縦720x1280）で一時Renderして保存し、完了後Editor Canvas寸法を復元。
+- Camera Zoom/RatioをProject JSONへ保存・復元。
+- 3人称Editing ViewをOutput Camera Mockも視野に入る`(9, 6.8, 13)`へ変更。
+- Camera View時に選択比率の実出力Frameを白細線＋オレンジCornerでOverlay表示。Frame内がOutput Camera FOVと一致するようStage寸法・Frame占有率からEditing Camera FOVを補正。
+- Playback中、Frame Pose/Actor Rotation/Camera設定のSignatureが変わったFrameだけPNG Captureし、軽量JPEG Thumbnailへ縮小してTimelineへCache表示。未生成FrameはStick Figure fallback。
+- ユーザー提供`pose-board-project-2.json`の8コマ歩行を基準に、脚を4コマShiftした左右対称の整数degreeへ整理。肩振りも左右対称・控えめな振幅へ修正。
+- Walk Sampleの肩X回転を8点の正弦波状`[0,-18,-25,-18,0,18,25,18]`へ変更し、右肩を常に同量の逆符号として完全な逆位相にした。
+- Camera ViewではOrbitControlsを無効化し、Drag/Scrollによる視点ずれを防止。画角変更はCamera Zoom Sliderのみに限定。
+- ImageGenで地方都市の飲食店街を描いたPop Style背景を生成し、`public/backgrounds/local-city-street.png`へ保存。
+- 背景画像をStage奥`z=-3`の18x10.125 Planeへ貼った固定2D書き割りとして実装。外部3D背景・奥行き編集は追加していない。
+- Output Cameraを水平化。position/targetのYをともに1.1へ揃え、全身収容のためZを9.2へ後退。Camera Mockの下向き回転も解除。
+- Camera View切替時にEditing Cameraのposition/up/lookAt/roll/FOVを明示的にOutput Cameraへ同期し、3人称Orbit姿勢の残留で書き割りが傾く可能性を除去。BackdropもRotation=0を明示。
+- 書き割りの中心高を出力カメラの注視点（Y=1.1）へ揃え、最大ズームアウト0.60×・横長16:9の画角を覆う固定サイズへ拡大。1.00×ではその中央部分が見える。
+- ESLint 9 flat configを追加し、`npm run lint`を実行可能にした。
 
 ## Why — なぜそうしたか
 
@@ -50,18 +99,10 @@ Pose BoardはBlender等の簡易版ではなく、3Dデッサン人形を使っ�
 
 ## What's Next — 次に何をするか
 
-Phase 0 Technical PoCを実装する。
-
-最初のゴール:
-
-1. Webアプリの最小構成を作る。
-2. Three.jsでプリミティブHuman Rigを1体表示する。
-3. 主要関節を選択してXYZ回転できるようにする。
-4. 現在PoseをFrame Stateとして保存する。
-5. Frameを複製できるようにする。
-6. 複数FrameをTimelineに並べる。
-7. SVGの音楽プレイヤー型UIから一定FPSでパラパラ再生する。
-8. Desktop/Mobile双方で最低限操作可能か確認する。
+1. ブラウザでDesktop/Mobile表示とRigのクリック選択を手動確認
+2. 関節回転 → Frame複製 → 調整 → Playの操作感を確認
+3. 実機確認で見つかった問題を修正
+4. Phase 0の操作感を確認後、必要なPoC調整だけを行う
 
 **Phase 1以降の機能を先回りして実装しないこと。**
 
@@ -69,29 +110,54 @@ Phase 0 Technical PoCを実装する。
 
 ## Changed Files
 
-現時点では仕様書のみ。
-
+- `package.json`
+- `package-lock.json`
+- `index.html`
+- `vite.config.ts`
+- `eslint.config.js`
+- `tsconfig.json`
+- `tsconfig.app.json`
+- `tsconfig.node.json`
+- `src/main.tsx`
+- `src/App.tsx`
+- `src/Stage.tsx`
+- `src/Rig.tsx`
+- `src/model.ts`
+- `src/model.test.ts`
+- `src/icons.tsx`
+- `src/styles.css`
 - `README.md`
-- `docs/REQUIREMENTS.md`
-- `docs/FUNCTIONAL_SPEC.md`
-- `docs/UI_SPEC.md`
-- `docs/DATA_MODEL.md`
-- `docs/ARCHITECTURE.md`
-- `docs/ROADMAP.md`
-- `docs/DEVELOPMENT_RULES.md`
 - `HANDOFF.md`
 
 ## Verification
 
-- 実装前のためBuild/Test未実施。
-- GitHub上への仕様書配置まで完了。
+- Runtime: Node.js v22.23.2 / npm v10.9.8（nvm）
+- 依存導入: `npm install` 成功、262 packages、0 vulnerabilities
+- ZIP出力用に`jszip`を追加。合計275 packages、0 vulnerabilities。
+- Test: `npm test` 成功、1 file / 2 tests passed（2026-08-26再確認）
+- Lint: `npm run lint` 成功（ESLint 9 flat config、2026-08-26確認）
+- Build: `npm run build` 成功、598 modules transformed（2026-08-26再確認）
+- Dev server: `npm run dev -- --host 127.0.0.1` 成功、起動約1.8秒
+- HTTP check: `curl -I http://127.0.0.1:5173/` → 200 OK
+- Manual check: ブラウザでの視覚・操作確認は未実施
 
 ## Known Issues / Open Questions
 
-- Frameworkの最終選定は未確定。TypeScript + React系 + Three.jsを推奨。
-- Primitive Human Rigの具体的なBone数・Rotation LimitはPoCで調整する。
-- Touch操作時の最適な関節操作方法はPoCで検証する。
-- Editing ViewとOutput Cameraの分離は将来余地を確保するが、Phase 0で必須ではない。
+- Rotation Limitは未設定（PoCでは -180°〜180°）。
+- Touch操作時の関節選択とOrbitControlsの競合は実機確認が必要。
+- PoCではOrbitControlsをEditing Viewとして利用。Output Camera Stateへの保存はしていない。
+- Production bundleはThree.jsを含み約1.09 MB（gzip約303 KB）。Viteのchunk size warningあり。PoCでは許容し、必要ならPhase 1でcode splittingを検討。
+- 開発サーバーはユーザー要望により作業中は停止。確認時は `npm run dev`（固定port 43127）で起動する。
+- ZIPの全FrameブラウザダウンロードはBuild確認済みだが、実ブラウザでのファイル内容確認は未実施。
+- Timeline Drag & DropはDesktop向け。Mobile長押しDragは未実装。
+- 歩行JSONは受領・整数degreeへの整理・左右対称化まで反映済み。最終的な見た目はManual Check後に微調整する。
+- Thumbnail生成・Camera Mock再表示・Camera Frameの視覚確認はBuild済みだが実ブラウザManual Check未実施。
+
+## Important Decisions
+
+- FrameworkはTypeScript + React + Vite + React Three Fiberを選定。
+- 回転は内部でradian、UI表示/入力はdegreeに統一。
+- Frameは安定UUIDを持つ可変長配列とし、Pose複製はdeep copyする。
 
 ## Do Not Do
 

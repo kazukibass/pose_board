@@ -49,6 +49,22 @@ v0.1では以下を扱わない。
 - [ロードマップ](docs/ROADMAP.md)
 - [開発原則](docs/DEVELOPMENT_RULES.md)
 
+## Development
+
+Phase 0 Technical PoC is in progress.
+
+```bash
+npm install
+npm run dev
+```
+
+Production verification:
+
+```bash
+npm test
+npm run build
+```
+
 ## Status
 
-Planning / v0.1 specification
+Phase 0 / Technical PoC implementation
