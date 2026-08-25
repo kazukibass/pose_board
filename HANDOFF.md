@@ -10,7 +10,7 @@
 ## Current Status
 
 - Phase: Phase 0 — Technical PoC
-- Status: 最小実装済み / Test・Build・HTTP配信確認済み
+- Status: 拡張PoC実装済み / Test・Lint・Build・HTTP配信確認済み
 - Last updated: 2026-08-26
 - Last agent: Codex
 
@@ -43,7 +43,7 @@
 - Sliderは1回のFocus操作を1履歴として記録し、ドラッグ中の大量履歴生成を防止。
 - 外部3D Assetを追加せず、プリミティブで三脚付き業務用カメラMockを構築。Output Camera位置とCameraHelperに一致させた。
 - Camera MockのLensをActor方向へ180度反転。再生中は自動非表示、Stage左上の「カメラ」ボタンから手動表示切替可能。
-- 動作サンプルSelectorを追加。「歩く」と、ZIP差分確認用にPose/Actor回転が大きく変わる「激しい動作」を選択可能。
+- 動作サンプルSelectorを追加。「歩く」と、JSON読込時の「読み込んだプロジェクト」を表示する。ZIP確認用の「激しい動作」は確認完了後に削除済み。
 - 歩行サンプルの腕をY=60°基準、X=-100°〜-50°の反対振りへ修正し、肘を曲げて手を頭の斜め下へ配置。
 - 全回転Sliderの中央に0°ガイドを追加し、Focus中は強調表示。
 - ZIP出力時のFrame更新を`flushSync`で確定してから2 RAF待機し、同一画像が繰り返される問題へ対処。
@@ -70,6 +70,15 @@
 - Camera View切替時にEditing Cameraのposition/up/lookAt/roll/FOVを明示的にOutput Cameraへ同期し、3人称Orbit姿勢の残留で書き割りが傾く可能性を除去。BackdropもRotation=0を明示。
 - 書き割りの中心高を出力カメラの注視点（Y=1.1）へ揃え、最大ズームアウト0.60×・横長16:9の画角を覆う固定サイズへ拡大。1.00×ではその中央部分が見える。
 - ESLint 9 flat configを追加し、`npm run lint`を実行可能にした。
+- Camera設定Panelを初期状態で折り畳み、Camera Mock表示ボタンとは別のChevronで展開できるようにした。
+- 再生開始時のEditing Viewを記憶してCamera Viewへ強制切替し、再生停止時は停止経路にかかわらず元のEditing Viewへ復帰するようにした。
+- 画像背景をなし（透過）・地方都市・街の公園・リビングの4種へ拡張。公園とリビングはImageGen生成素材をProject内へ保存した。背景なし時だけ白・グレー・グリーンのStudio Backgroundを選択可能。
+- 人型の体格プリセットを成人標準・成人細身・子ども・4頭身・2頭身の5種追加。既存Bone/Pose互換を維持した全身比率＋頭部比率変更とし、足元の接地位置を補正した。
+- 背景・体格プリセットをProject JSONへ保存・復元する。
+- 画像背景へ「なし（透過）」を追加。白・グレー・グリーンバックは独立したStudio Background設定へ分離し、OFFにすると選択済み画像背景へ戻る。画像背景とStudio Backgroundの両方をJSONへ保存・復元する。
+- 背景競合を避けるためStudio Backgroundは画像背景が「なし」の時だけ選択可能に変更。画像背景選択時はStudio Backgroundを自動OFFにし、描画側でも画像背景を優先する。
+- UI導線をScene設定→Joint選択/編集→Frame/Playback→File出力の順に整理。Headerの4出力ボタンはFile Menuへ、左Panelの体格・動作・背景群はScene設定Accordionへ集約し、どちらも初期状態で閉じる。
+- 左PanelのJoint選択もSection全体をAccordion化し、初期状態を閉じる。展開後の部位Group単位の開閉状態は維持する。
 
 ## Why — なぜそうしたか
 
@@ -99,10 +108,10 @@ Pose BoardはBlender等の簡易版ではなく、3Dデッサン人形を使っ�
 
 ## What's Next — 次に何をするか
 
-1. ブラウザでDesktop/Mobile表示とRigのクリック選択を手動確認
-2. 関節回転 → Frame複製 → 調整 → Playの操作感を確認
-3. 実機確認で見つかった問題を修正
-4. Phase 0の操作感を確認後、必要なPoC調整だけを行う
+1. 整理後UIのDesktop/Mobile表示、File Menu、Scene/Joint Accordionを実機確認
+2. 体格5種の接地・関節Marker位置と、画像/Studio/透過背景のPNG・ZIP出力を実機確認
+3. 関節回転 → Frame複製 → 調整 → Playの中心操作感を継続確認
+4. 実機確認で見つかった問題を修正
 
 **Phase 1以降の機能を先回りして実装しないこと。**
 
@@ -126,6 +135,9 @@ Pose BoardはBlender等の簡易版ではなく、3Dデッサン人形を使っ�
 - `src/model.test.ts`
 - `src/icons.tsx`
 - `src/styles.css`
+- `public/backgrounds/local-city-street.png`
+- `public/backgrounds/neighborhood-park.png`
+- `public/backgrounds/apartment-living-room.png`
 - `README.md`
 - `HANDOFF.md`
 
@@ -137,17 +149,17 @@ Pose BoardはBlender等の簡易版ではなく、3Dデッサン人形を使っ�
 - Test: `npm test` 成功、1 file / 2 tests passed（2026-08-26再確認）
 - Lint: `npm run lint` 成功（ESLint 9 flat config、2026-08-26確認）
 - Build: `npm run build` 成功、598 modules transformed（2026-08-26再確認）
-- Dev server: `npm run dev -- --host 127.0.0.1` 成功、起動約1.8秒
-- HTTP check: `curl -I http://127.0.0.1:5173/` → 200 OK
-- Manual check: ブラウザでの視覚・操作確認は未実施
+- HTTP check: 既存の`127.0.0.1:43127`からApp、公園背景、リビング背景がすべて200 OK（2026-08-26確認）
+- Dev server: ユーザーが固定port 43127を管理。必要時に未起動ならAgent側で起動してよい。
+- Manual check: ユーザーによる継続的なブラウザ確認あり。直近のUI Accordion整理後は最終確認待ち。
 
 ## Known Issues / Open Questions
 
 - Rotation Limitは未設定（PoCでは -180°〜180°）。
 - Touch操作時の関節選択とOrbitControlsの競合は実機確認が必要。
 - PoCではOrbitControlsをEditing Viewとして利用。Output Camera Stateへの保存はしていない。
-- Production bundleはThree.jsを含み約1.09 MB（gzip約303 KB）。Viteのchunk size warningあり。PoCでは許容し、必要ならPhase 1でcode splittingを検討。
-- 開発サーバーはユーザー要望により作業中は停止。確認時は `npm run dev`（固定port 43127）で起動する。
+- Production bundleはThree.jsを含み約1.22 MB（gzip約342 KB）。Viteのchunk size warningあり。PoCでは許容し、必要ならPhase 1でcode splittingを検討。
+- 開発サーバーはユーザー管理。Agentは確認に必要で未起動の場合のみ固定port 43127で起動する。
 - ZIPの全FrameブラウザダウンロードはBuild確認済みだが、実ブラウザでのファイル内容確認は未実施。
 - Timeline Drag & DropはDesktop向け。Mobile長押しDragは未実装。
 - 歩行JSONは受領・整数degreeへの整理・左右対称化まで反映済み。最終的な見た目はManual Check後に微調整する。

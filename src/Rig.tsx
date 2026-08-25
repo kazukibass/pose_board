@@ -3,7 +3,8 @@ import { useMemo } from 'react'
 import { Euler, Quaternion } from 'three'
 import type { BoneName, Pose, Rotation } from './model'
 
-type Props = { pose: Pose; actorRotation: Rotation; selected: BoneName; onSelect: (bone: BoneName) => void }
+export type RigPreset = 'adult' | 'slender' | 'child' | 'chibi4' | 'chibi2'
+type Props = { pose: Pose; actorRotation: Rotation; selected: BoneName; onSelect: (bone: BoneName) => void; preset: RigPreset }
 type PartProps = { bone: BoneName; pose: Pose; selected: BoneName; onSelect: (bone: BoneName) => void; children: React.ReactNode }
 
 const arcEnd = Math.PI * 1.65
@@ -96,8 +97,17 @@ function Leg({ side, pose, selected, onSelect }: Props & { side: 'left' | 'right
 }
 
 export function Rig(props: Props) {
-  const { pose, actorRotation, selected, onSelect } = props
-  return <group rotation={Object.values(actorRotation) as [number, number, number]}>
+  const { pose, actorRotation, selected, onSelect, preset } = props
+  const profiles: Record<RigPreset, { scale: [number, number, number]; head: number }> = {
+    adult: { scale: [1, 1, 1], head: 1 },
+    slender: { scale: [.84, 1.03, .88], head: .96 },
+    child: { scale: [.78, .78, .82], head: 1.18 },
+    chibi4: { scale: [.75, .68, .8], head: 1.42 },
+    chibi2: { scale: [.72, .5, .78], head: 1.9 },
+  }
+  const profile = profiles[preset]
+  const groundOffset = -2.3 * (1 - profile.scale[1])
+  return <group position={[0, groundOffset, 0]} scale={profile.scale} rotation={Object.values(actorRotation) as [number, number, number]}>
     <group position={[0, -1.05, 0]} rotation={Object.values(pose.hip) as [number, number, number]}>
     <Part bone="hip" {...{ pose, selected, onSelect }}><mesh position={[0, 1.25, 0]}><boxGeometry args={[.75, .45, .48]} /><RigMaterial color="#39466f" /></mesh></Part>
     <Leg side="left" {...props} /><Leg side="right" {...props} />
@@ -108,7 +118,7 @@ export function Rig(props: Props) {
         <Arm side="left" {...props} /><Arm side="right" {...props} />
         <group position={[0, .84, 0]} rotation={Object.values(pose.neck) as [number, number, number]}>
           <Part bone="neck" {...{ pose, selected, onSelect }}><mesh><cylinderGeometry args={[.16, .18, .3, 16]} /><RigMaterial color={skin} /></mesh></Part>
-          <group position={[0, .43, 0]} rotation={Object.values(pose.head) as [number, number, number]}>
+          <group position={[0, .43, 0]} scale={profile.head} rotation={Object.values(pose.head) as [number, number, number]}>
             <Part bone="head" {...{ pose, selected, onSelect }}><mesh><sphereGeometry args={[.43, 24, 18]} /><RigMaterial color={skin} /></mesh><mesh position={[0, -.02, .41]}><coneGeometry args={[.08, .2, 12]} /><RigMaterial color={skin} /></mesh></Part>
           </group>
         </group>

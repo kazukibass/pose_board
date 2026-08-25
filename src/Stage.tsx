@@ -3,9 +3,11 @@ import { Canvas, useThree } from '@react-three/fiber'
 import { ContactShadows, OrbitControls, useTexture } from '@react-three/drei'
 import { CameraHelper, Object3D, PerspectiveCamera, SRGBColorSpace, Vector2, Vector3 } from 'three'
 import type { BoneName, Pose, Rotation } from './model'
-import { Rig } from './Rig'
+import { Rig, type RigPreset } from './Rig'
 
 type OutputRatio = 'landscape' | 'portrait'
+export type BackgroundPreset = 'none' | 'city' | 'park' | 'room'
+export type StudioBackdrop = 'none' | 'white' | 'gray' | 'green'
 
 const outputPosition = new Vector3(0, 1.1, 9.2)
 const outputTarget = new Vector3(0, 1.1, 0)
@@ -14,12 +16,20 @@ const widestOutputFov = 45 / .6
 const backdropHeight = 2 * backdropDistance * Math.tan(widestOutputFov * Math.PI / 360)
 const backdropWidth = backdropHeight * 16 / 9
 
-function CityBackdrop() {
-  const texture = useTexture('/backgrounds/local-city-street.png')
-  texture.colorSpace = SRGBColorSpace
+function StageBackdrop({ preset, studio }: { preset: BackgroundPreset; studio: StudioBackdrop }) {
+  const textures = useTexture([
+    '/backgrounds/local-city-street.png',
+    '/backgrounds/neighborhood-park.png',
+    '/backgrounds/apartment-living-room.png',
+  ])
+  textures.forEach((texture) => { texture.colorSpace = SRGBColorSpace })
+  const imageIndex = { city: 0, park: 1, room: 2 }[preset as 'city' | 'park' | 'room']
+  const solidColors: Record<Exclude<StudioBackdrop, 'none'>, string> = { white: '#f8f8f4', gray: '#9ca3af', green: '#19a85b' }
+  const activeStudio = preset === 'none' ? studio : 'none'
+  if (activeStudio === 'none' && preset === 'none') return null
   return <mesh position={[0, outputTarget.y, -3]} rotation={[0, 0, 0]}>
     <planeGeometry args={[backdropWidth, backdropHeight]} />
-    <meshBasicMaterial map={texture} toneMapped={false} />
+    <meshBasicMaterial map={activeStudio === 'none' && imageIndex !== undefined ? textures[imageIndex] : null} color={activeStudio === 'none' ? 'white' : solidColors[activeStudio]} toneMapped={false} />
   </mesh>
 }
 
@@ -100,13 +110,16 @@ function StudioCameraMock() {
   </group>
 }
 
-type StageProps = { pose: Pose; actorRotation: Rotation; selected: BoneName; onSelect: (bone: BoneName) => void; hint: string; resetViewLabel: string; overviewLabel: string; cameraLabel: string; zoomLabel: string; landscapeLabel: string; portraitLabel: string; outputZoom: number; outputRatio: OutputRatio; onZoomChange: (zoom: number) => void; onRatioChange: (ratio: OutputRatio) => void; showCamera: boolean; onToggleCamera: () => void; onCaptureReady: (capture: () => string) => void }
+type StageProps = { pose: Pose; actorRotation: Rotation; selected: BoneName; onSelect: (bone: BoneName) => void; hint: string; resetViewLabel: string; overviewLabel: string; cameraLabel: string; zoomLabel: string; landscapeLabel: string; portraitLabel: string; outputZoom: number; outputRatio: OutputRatio; backgroundPreset: BackgroundPreset; studioBackdrop: StudioBackdrop; rigPreset: RigPreset; onZoomChange: (zoom: number) => void; onRatioChange: (ratio: OutputRatio) => void; showCamera: boolean; playing: boolean; onToggleCamera: () => void; onCaptureReady: (capture: () => string) => void }
 
-export function Stage({ pose, actorRotation, selected, onSelect, hint, resetViewLabel, overviewLabel, cameraLabel, zoomLabel, landscapeLabel, portraitLabel, outputZoom, outputRatio, onZoomChange, onRatioChange, showCamera, onToggleCamera, onCaptureReady }: StageProps) {
+export function Stage({ pose, actorRotation, selected, onSelect, hint, resetViewLabel, overviewLabel, cameraLabel, zoomLabel, landscapeLabel, portraitLabel, outputZoom, outputRatio, backgroundPreset, studioBackdrop, rigPreset, onZoomChange, onRatioChange, showCamera, playing, onToggleCamera, onCaptureReady }: StageProps) {
   const [viewMode, setViewMode] = useState<'camera' | 'overview'>('overview')
+  const [cameraMenuOpen, setCameraMenuOpen] = useState(false)
   const [viewKey, setViewKey] = useState(0)
   const [stageSize, setStageSize] = useState({ width: 800, height: 500 })
   const stageRef = useRef<HTMLDivElement | null>(null)
+  const viewBeforePlayback = useRef<'camera' | 'overview'>('overview')
+  const wasPlaying = useRef(false)
   const cameraView = viewMode === 'camera'
   const resetView = (mode: 'camera' | 'overview') => { setViewMode(mode); setViewKey((key) => key + 1) }
   const editingPosition: [number, number, number] = cameraView ? [outputPosition.x, outputPosition.y, outputPosition.z] : [9, 6.8, 13]
@@ -127,14 +140,24 @@ export function Stage({ pose, actorRotation, selected, onSelect, hint, resetView
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    if (playing && !wasPlaying.current) {
+      viewBeforePlayback.current = viewMode
+      if (viewMode !== 'camera') resetView('camera')
+    } else if (!playing && wasPlaying.current && viewMode !== viewBeforePlayback.current) {
+      resetView(viewBeforePlayback.current)
+    }
+    wasPlaying.current = playing
+  }, [playing, viewMode])
+
   return <div className="stage" ref={stageRef}>
     <Canvas key={`${viewMode}-${viewKey}`} camera={{ position: editingPosition, fov: cameraView ? cameraViewFov : 42 }} gl={{ alpha: true, antialias: true, preserveDrawingBuffer: true }}>
-      <color attach="background" args={['#dfe5ee']} />
+      {(backgroundPreset !== 'none' || studioBackdrop !== 'none') && <color attach="background" args={['#dfe5ee']} />}
       <ambientLight intensity={1.8} />
       <directionalLight position={[4, 7, 5]} intensity={2.2} castShadow />
       <EditingCameraFov active={cameraView} fov={cameraViewFov} />
-      <CityBackdrop />
-      <Rig pose={pose} actorRotation={actorRotation} selected={selected} onSelect={onSelect} />
+      <StageBackdrop preset={backgroundPreset} studio={studioBackdrop} />
+      <Rig pose={pose} actorRotation={actorRotation} selected={selected} onSelect={onSelect} preset={rigPreset} />
       <OutputCameraGuide onCaptureReady={onCaptureReady} visible={showCamera && !cameraView} fov={outputFov} ratio={outputRatio} />
       {showCamera && !cameraView && <StudioCameraMock />}
       <ContactShadows position={[0, -2.28, 0]} opacity={.22} scale={8} blur={2.5} />
@@ -144,12 +167,12 @@ export function Stage({ pose, actorRotation, selected, onSelect, hint, resetView
     <div className="stage-hint">{hint}</div>
     {cameraView && <div className={`output-frame ${outputRatio}`} style={{ width: frameSize.width, height: frameSize.height }}><span>{outputRatio === 'landscape' ? '16:9 · 1280×720' : '9:16 · 720×1280'}</span></div>}
     <div className="camera-controls">
-      <button className={`camera-label ${showCamera ? 'active' : ''}`} aria-pressed={showCamera} onClick={onToggleCamera}>{cameraLabel}</button>
-      <div className="camera-panel">
+      <div className="camera-menu-heading"><button className={`camera-label ${showCamera ? 'active' : ''}`} aria-pressed={showCamera} onClick={onToggleCamera}>{cameraLabel}</button><button className="camera-menu-toggle" aria-expanded={cameraMenuOpen} aria-label={`${cameraLabel} menu`} onClick={() => setCameraMenuOpen((open) => !open)}>{cameraMenuOpen ? '⌃' : '⌄'}</button></div>
+      {cameraMenuOpen && <div className="camera-panel">
         <div className="camera-view-actions"><button className={cameraView ? 'active' : ''} onClick={() => resetView('camera')}>{resetViewLabel}</button><button className={!cameraView ? 'active' : ''} onClick={() => resetView('overview')}>{overviewLabel}</button></div>
         <div className="ratio-switch"><button className={outputRatio === 'landscape' ? 'active' : ''} onClick={() => onRatioChange('landscape')}>{landscapeLabel}</button><button className={outputRatio === 'portrait' ? 'active' : ''} onClick={() => onRatioChange('portrait')}>{portraitLabel}</button></div>
         <label className="camera-zoom"><span>{zoomLabel}</span><input type="range" min="0.6" max="2" step="0.05" value={outputZoom} onChange={(event) => onZoomChange(Number(event.target.value))} /><output>{outputZoom.toFixed(2)}×</output></label>
-      </div>
+      </div>}
     </div>
   </div>
 }
