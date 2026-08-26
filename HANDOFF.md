@@ -10,9 +10,9 @@
 ## Current Status
 
 - Phase: Phase 0 — Technical PoC
-- Status: 拡張PoC実装済み / Test・Lint・Build・HTTP配信確認済み
+- Status: 拡張PoC実装済み / Test・Lint・Build・HTTP配信確認済み。Mobile Drawer追加により、コードレビューで見つかったMobileでのScene設定・Joint選択の欠落を解消済み。
 - Last updated: 2026-08-26
-- Last agent: Codex
+- Last agent: Claude（コードレビュー＋Mobile Drawer実装）
 
 ## What — 何をしたか
 
@@ -79,6 +79,10 @@
 - 背景競合を避けるためStudio Backgroundは画像背景が「なし」の時だけ選択可能に変更。画像背景選択時はStudio Backgroundを自動OFFにし、描画側でも画像背景を優先する。
 - UI導線をScene設定→Joint選択/編集→Frame/Playback→File出力の順に整理。Headerの4出力ボタンはFile Menuへ、左Panelの体格・動作・背景群はScene設定Accordionへ集約し、どちらも初期状態で閉じる。
 - 左PanelのJoint選択もSection全体をAccordion化し、初期状態を閉じる。展開後の部位Group単位の開閉状態は維持する。
+- コードレビューを実施し、Mobile幅（760px以下）で`.bone-panel`（Scene設定・Joint選択）が`display: none`のまま代替導線を持たず操作不能になっていたことを検出。`docs/UI_SPEC.md`の「Side Panel相当の機能はBottom Sheet / Drawerへ移す」というMobile要件に反しており、`HANDOFF.md`のKnown Issuesにも未記載だった。
+- HeaderにMobile専用の☰ Menuボタンを追加し、`.bone-panel`をOff-canvas Drawer（左からスライドイン、半透明Backdrop付き）としてMobileで開閉可能にした。DesktopのJSX・スタイルは変更していない（同一Componentを`open`クラスと`position: fixed`の有無で出し分け）。
+- Drawerは①☰ボタン再タップ、②Backdropタップ、③Drawer右上の×ボタン、④Escapeキー、の4経路で閉じられるようにした。Joint一覧から関節を選択した場合（Group見出し・個別Bone共通）はDrawerを自動的に閉じ、そのままStage/Sliderでの編集に移れるようにした。
+- Playwright（Chromium, viewport 390×844）でDrawerのOpen/Close全経路、関節選択時の自動Close、Scene設定（体格・背景・動作サンプル）へのMobileからのアクセス、Desktop（1400×900）表示に見た目の差分が出ていないことをスクリーンショットで確認した。
 
 ## Why — なぜそうしたか
 
@@ -112,6 +116,7 @@ Pose BoardはBlender等の簡易版ではなく、3Dデッサン人形を使っ�
 2. 体格5種の接地・関節Marker位置と、画像/Studio/透過背景のPNG・ZIP出力を実機確認
 3. 関節回転 → Frame複製 → 調整 → Playの中心操作感を継続確認
 4. 実機確認で見つかった問題を修正
+5. 追加したMobile Drawerを実機（iOS Safari / Android Chrome）のTouchでOpen/Close・Backdropタップ・関節選択を確認する（Playwrightでのシミュレーションのみで未確認）
 
 **Phase 1以降の機能を先回りして実装しないこと。**
 
@@ -152,11 +157,13 @@ Pose BoardはBlender等の簡易版ではなく、3Dデッサン人形を使っ�
 - HTTP check: 既存の`127.0.0.1:43127`からApp、公園背景、リビング背景がすべて200 OK（2026-08-26確認）
 - Dev server: ユーザーが固定port 43127を管理。必要時に未起動ならAgent側で起動してよい。
 - Manual check: ユーザーによる継続的なブラウザ確認あり。直近のUI Accordion整理後は最終確認待ち。
+- Mobile Drawer追加後の再確認（2026-08-26, Claude）: `npm test` 1 file / 2 tests pass、`npm run lint` 0件、`npm run build` 598 modules success（bundle sizeに実質変化なし）。Playwright（Chromium, viewport 390×844）でDrawerのOpen/Close（☰ボタン／Backdrop／×ボタン／Escapeの4経路）、Joint選択時の自動Close、Scene設定（体格・背景・動作サンプル）へのアクセスを確認。Desktop（1400×900）はスクリーンショット比較で変更前と差分なし。実機TouchデバイスでのDrawer確認は未実施。
 
 ## Known Issues / Open Questions
 
 - Rotation Limitは未設定（PoCでは -180°〜180°）。
 - Touch操作時の関節選択とOrbitControlsの競合は実機確認が必要。
+- Mobile Drawerの開閉は実機Touchデバイスで未確認（Playwrightのpointerイベントシミュレーションのみ）。特にBackdropタップの判定領域とiOS Safariでの`position: fixed` + `env(safe-area-inset-*)`の挙動は要確認。
 - PoCではOrbitControlsをEditing Viewとして利用。Output Camera Stateへの保存はしていない。
 - Production bundleはThree.jsを含み約1.22 MB（gzip約342 KB）。Viteのchunk size warningあり。PoCでは許容し、必要ならPhase 1でcode splittingを検討。
 - 開発サーバーはユーザー管理。Agentは確認に必要で未起動の場合のみ固定port 43127で起動する。
@@ -170,6 +177,7 @@ Pose BoardはBlender等の簡易版ではなく、3Dデッサン人形を使っ�
 - FrameworkはTypeScript + React + Vite + React Three Fiberを選定。
 - 回転は内部でradian、UI表示/入力はdegreeに統一。
 - Frameは安定UUIDを持つ可変長配列とし、Pose複製はdeep copyする。
+- Mobileの Side Panel は別UIとして作らず、Desktopと同じ`.bone-panel`（同一JSX）をOff-canvas Drawerとして出し分ける実装にした。`docs/UI_SPEC.md`の「DesktopとMobileで機能を分断せず、同じProjectを同じ概念で編集する」という方針に合わせるため。
 
 ## Do Not Do
 
