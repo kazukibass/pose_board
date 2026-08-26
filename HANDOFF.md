@@ -2,7 +2,7 @@
 
 ## Current Status
 - Active branch: `feature/quadruped-rig`
-- Status: Common Quadruped Rig prototype added; Stage/UI integration pending.
+- Status: Common Quadruped Rig prototype implemented on branch; Stage/UI integration and verification pending.
 - Last updated: 2026-08-26
 - Last agent: ChatGPT
 
@@ -16,7 +16,7 @@
 The current `BoneName` and `Pose` schema is Human-specific and is already used by Frame, Undo/Redo, JSON import/export and playback. The quadruped visual prototype is isolated first so those systems are not broken by a premature schema migration.
 
 ## Where
-- `src/QuadrupedRig.tsx` — new prototype.
+- `src/QuadrupedRig.tsx` — implemented prototype.
 - Inspect next: `src/Stage.tsx`, `src/App.tsx`, `src/model.ts`, `src/Rig.tsx`.
 
 ## What's Next
