@@ -31,6 +31,16 @@ The current `BoneName` and `Pose` schema is Human-specific and is already used b
 9. Run `npm test`, `npm run lint`, `npm run build`.
 10. Update HANDOFF with results before opening/merging PR.
 
+## Changed Files
+- `src/QuadrupedRig.tsx`
+- `HANDOFF.md`
+
+## Verification
+- Build: not run yet.
+- Lint: not run yet.
+- Test: not run yet.
+- Manual: not run yet; component is intentionally not wired to Stage until the next verification step.
+
 ## Known Issues
 - Stage/UI does not yet expose the Quadruped prototype.
 - Human bone labels are not appropriate for quadruped; do not solve this by breaking the existing Human schema.
