@@ -12,9 +12,6 @@
 - Primitive only: box/sphere/capsule/cone.
 - Temporary adapter: Human Arm chains drive front legs; Human Leg chains drive rear legs.
 
-## Why
-Current BoneName/Pose is Human-specific and already coupled to Frame, Undo/Redo, JSON and playback. Keep the visual prototype isolated before schema migration.
-
 ## What's Next
 1. Wire QuadrupedRig into Stage.
 2. Add Rig Type selector Human / Quadruped, separate from Human Body Preset.
