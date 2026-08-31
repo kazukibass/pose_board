@@ -77,7 +77,7 @@ Camera
 v0.1のUIでは3D Actorは1体のみとする。
 
 - Actor/Rigの切替は可能。
-- 成人・子供・SD・犬猫等のPresetを選択する。
+- 成人・子供・SD・共通Quadruped等のPresetを選択する。
 - 将来Imported GLB/glTF等へ切替可能な余地を残す。
 - 複数Actor UI、Actor間の選択・重なり管理はv0.1では実装しない。
 
@@ -95,6 +95,8 @@ v0.1のUIでは3D Actorは1体のみとする。
 - Curve / Tube: 尻尾等
 
 Object3D / GroupをBone Pivotとして利用し、親子階層によって関節運動を表現する。
+
+現行Quadruped prototypeはHuman用`Pose / BoneName` schemaを互換Adapterとして再利用する。Stageは`presetId === "quadruped"`でHuman/Quadruped rendererを切り替える。Rig TypeとBody Presetはまだ別概念として永続化・表示しておらず、犬・猫別Presetも作らない。
 
 ## Camera
 

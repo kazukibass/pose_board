@@ -29,19 +29,19 @@ const japaneseBoneLabels: Record<BoneName, string> = {
 }
 
 const copy = {
-  en: { tagline: 'Pose → Duplicate → Adjust → Play', rig: 'Rig', human: 'Human · 01', menu: 'Menu', closeMenu: 'Close menu', samples: 'Motion sample', walk: 'Walk cycle', custom: 'Imported project', selected: 'Selected joint', jointRotation: 'Joint rotation', actorRotation: 'Whole-body rotation', currentFrame: 'Current frame', applyAll: 'Apply to all frames', undo: 'Undo', redo: 'Redo', resetJoint: 'Reset joint', resetActor: 'Reset whole body', resetView: 'Reset to camera', overview: 'Third-person view', camera: 'Camera', zoom: 'Zoom', landscape: 'Landscape 16:9', portrait: 'Portrait 9:16', hint: 'Drag to orbit · Click a body part', tip: 'Edits affect only the current frame. Use Apply to all frames when intended.', loop: 'Loop', frames: 'Frames', total: 'total', duplicate: 'Duplicate', add: 'Add', remove: 'Delete', first: 'First frame', last: 'Last frame', previous: 'Previous frame', next: 'Next frame', play: 'Play', pause: 'Pause', fps: 'Frames per second', exportPng: 'Current PNG', exportZip: 'All PNGs ZIP', exportJson: 'Project JSON', importJson: 'Load JSON', importError: 'Could not load this project JSON.', exporting: 'Exporting…', groups: { face: 'Face', leftArm: 'Left arm', rightArm: 'Right arm', body: 'Body', leftLeg: 'Left leg', rightLeg: 'Right leg' } },
-  ja: { tagline: 'ポーズ → 複製 → 調整 → 再生', rig: 'リグ', human: '人型 · 01', menu: 'メニュー', closeMenu: 'メニューを閉じる', samples: '動作サンプル', walk: '歩く', custom: '読み込んだプロジェクト', selected: '選択中の関節', jointRotation: '関節の回転', actorRotation: '全身の回転', currentFrame: '現在のコマ', applyAll: '現在値を全コマへ適用', undo: '戻る', redo: '進む', resetJoint: '関節をリセット', resetActor: '全身回転をリセット', resetView: 'カメラ視点へ戻す', overview: '見下ろす3人称視点', camera: 'カメラ', zoom: 'ズーム', landscape: '横長 16:9', portrait: '縦長 9:16', hint: 'ドラッグで視点移動 · 体をクリックして選択', tip: '編集は現在のコマだけに反映されます。必要な場合だけ全コマへ適用してください。', loop: 'ループ', frames: 'コマ', total: 'コマ', duplicate: '複製', add: '追加', remove: '削除', first: '先頭のコマ', last: '最後のコマ', previous: '前のコマ', next: '次のコマ', play: '再生', pause: '一時停止', fps: 'フレームレート', exportPng: '現在コマPNG', exportZip: '全コマZIP', exportJson: 'プロジェクトJSON', importJson: 'JSON読込', importError: 'このプロジェクトJSONを読み込めませんでした。', exporting: '出力中…', groups: { face: '顔', leftArm: '左腕', rightArm: '右腕', body: '体', leftLeg: '左足', rightLeg: '右足' } },
+  en: { tagline: 'Pose → Duplicate → Adjust → Play', rig: 'Rig', human: 'Human · 01', quadruped: 'Quadruped · Template', menu: 'Menu', closeMenu: 'Close menu', samples: 'Motion sample', walk: 'Walk cycle', custom: 'Imported project', selected: 'Selected joint', jointRotation: 'Joint rotation', actorRotation: 'Whole-body rotation', currentFrame: 'Current frame', applyAll: 'Apply to all frames', undo: 'Undo', redo: 'Redo', resetJoint: 'Reset joint', resetActor: 'Reset whole body', resetView: 'Reset to camera', overview: 'Third-person view', camera: 'Camera', zoom: 'Zoom', landscape: 'Landscape 16:9', portrait: 'Portrait 9:16', hint: 'Drag to orbit · Click a body part', tip: 'Edits affect only the current frame. Use Apply to all frames when intended.', loop: 'Loop', frames: 'Frames', total: 'total', duplicate: 'Duplicate', add: 'Add', remove: 'Delete', first: 'First frame', last: 'Last frame', previous: 'Previous frame', next: 'Next frame', play: 'Play', pause: 'Pause', fps: 'Frames per second', exportPng: 'Current PNG', exportZip: 'All PNGs ZIP', exportJson: 'Project JSON', importJson: 'Load JSON', importError: 'Could not load this project JSON.', exporting: 'Exporting…', groups: { face: 'Face', leftArm: 'Left arm', rightArm: 'Right arm', body: 'Body', leftLeg: 'Left leg', rightLeg: 'Right leg' } },
+  ja: { tagline: 'ポーズ → 複製 → 調整 → 再生', rig: 'リグ', human: '人型 · 01', quadruped: '四足歩行 · テンプレート', menu: 'メニュー', closeMenu: 'メニューを閉じる', samples: '動作サンプル', walk: '歩く', custom: '読み込んだプロジェクト', selected: '選択中の関節', jointRotation: '関節の回転', actorRotation: '全身の回転', currentFrame: '現在のコマ', applyAll: '現在値を全コマへ適用', undo: '戻る', redo: '進む', resetJoint: '関節をリセット', resetActor: '全身回転をリセット', resetView: 'カメラ視点へ戻す', overview: '見下ろす3人称視点', camera: 'カメラ', zoom: 'ズーム', landscape: '横長 16:9', portrait: '縦長 9:16', hint: 'ドラッグで視点移動 · 体をクリックして選択', tip: '編集は現在のコマだけに反映されます。必要な場合だけ全コマへ適用してください。', loop: 'ループ', frames: 'コマ', total: 'コマ', duplicate: '複製', add: '追加', remove: '削除', first: '先頭のコマ', last: '最後のコマ', previous: '前のコマ', next: '次のコマ', play: '再生', pause: '一時停止', fps: 'フレームレート', exportPng: '現在コマPNG', exportZip: '全コマZIP', exportJson: 'プロジェクトJSON', importJson: 'JSON読込', importError: 'このプロジェクトJSONを読み込めませんでした。', exporting: '出力中…', groups: { face: '顔', leftArm: '左腕', rightArm: '右腕', body: '体', leftLeg: '左足', rightLeg: '右足' } },
 } as const
 
 const presetLabels = {
   en: {
-    rig: { adult: 'Adult', slender: 'Slender adult', child: 'Child', chibi4: '4-head chibi', chibi2: '2-head chibi' },
+    rig: { adult: 'Adult', slender: 'Slender adult', child: 'Child', chibi4: '4-head chibi', chibi2: '2-head chibi', quadruped: 'Quadruped template' },
     background: { none: 'None (transparent)', city: 'Regional city', park: 'Neighborhood park', room: 'Living room' },
     studio: { none: 'Off', white: 'White', gray: 'Gray', green: 'Green screen' },
     rigPreset: 'Body preset', backgroundPreset: 'Background', studioBackdrop: 'Studio backdrop',
   },
   ja: {
-    rig: { adult: '成人・標準', slender: '成人・細身', child: '子ども', chibi4: '4頭身', chibi2: '2頭身' },
+    rig: { adult: '成人・標準', slender: '成人・細身', child: '子ども', chibi4: '4頭身', chibi2: '2頭身', quadruped: '四足歩行（テンプレート）' },
     background: { none: 'なし（透過）', city: '地方都市', park: '街の公園', room: 'リビング' },
     studio: { none: 'OFF', white: '白', gray: 'グレー', green: 'グリーンバック' },
     rigPreset: '体格プリセット', backgroundPreset: '背景', studioBackdrop: 'スタジオ背景',
@@ -53,7 +53,7 @@ const navigationLabels = {
   ja: { file: 'ファイル', project: 'プロジェクト', images: '画像出力', sceneSetup: 'シーン設定', joints: '関節選択' },
 } as const
 
-const rigPresets: RigPreset[] = ['adult', 'slender', 'child', 'chibi4', 'chibi2']
+const rigPresets: RigPreset[] = ['adult', 'slender', 'child', 'chibi4', 'chibi2', 'quadruped']
 const backgroundPresets: BackgroundPreset[] = ['none', 'city', 'park', 'room']
 const studioBackdrops: StudioBackdrop[] = ['none', 'white', 'gray', 'green']
 
@@ -93,10 +93,54 @@ const walkPose = (index: number): Pose => {
   return pose
 }
 
+// Slow quadruped walk: rear leg, then front leg on the same side. The other
+// side uses the exact same curves half a cycle later so amplitudes stay equal.
+const quadrupedWalkPose = (index: number): Pose => {
+  const pose = createPose()
+  const opposite = (values: number[]) => values[(index + 4) % 8]
+  const rearUpper = [30, 10, -30, -45, -50, -25, 0, 20]
+  const rearLower = [7, 30, 45, 45, 65, 35, 7, 7]
+  const rearPaw = [-22, -22, -22, -22, -22, -6, -8, -18]
+  const frontUpper = [0, 0, 0, 0, -20, -40, -30, -14]
+  const frontLower = [0, 0, 0, 0, 0, 30, 17, 0]
+
+  pose.leftUpperLeg.x = radians(rearUpper[index])
+  pose.rightUpperLeg.x = radians(opposite(rearUpper))
+  pose.leftLowerLeg.x = radians(rearLower[index])
+  pose.rightLowerLeg.x = radians(opposite(rearLower))
+  pose.leftFoot.x = radians(rearPaw[index])
+  pose.rightFoot.x = radians(opposite(rearPaw))
+
+  pose.leftShoulder.x = radians(frontUpper[index])
+  pose.rightShoulder.x = radians(opposite(frontUpper))
+  pose.leftLowerArm.x = radians(frontLower[index])
+  pose.rightLowerArm.x = radians(opposite(frontLower))
+  pose.leftLowerArm.y = radians(70)
+  pose.rightLowerArm.y = radians(-70)
+  pose.leftLowerArm.z = radians(12)
+  pose.rightLowerArm.z = radians(-12)
+  pose.leftHand.y = radians(-72)
+  pose.rightHand.y = radians(72)
+
+  const bodySway = [4, 3, 0, -3, -4, -3, 0, 3][index]
+  pose.hip.z = radians(bodySway)
+  pose.chest.z = radians(-bodySway * .75)
+  pose.spine.x = radians(3)
+  pose.head.y = radians(-bodySway * .5)
+  return pose
+}
+
 const initialFrames = (): Frame[] => Array.from({ length: 8 }, (_, index) => ({
   id: makeId(),
   name: `Walk ${index + 1}`,
   pose: walkPose(index),
+  actorRotation: createRotation(),
+}))
+
+const initialQuadrupedFrames = (): Frame[] => Array.from({ length: 8 }, (_, index) => ({
+  id: makeId(),
+  name: `Quadruped Walk ${index + 1}`,
+  pose: quadrupedWalkPose(index),
   actorRotation: createRotation(),
 }))
 
@@ -222,7 +266,7 @@ export function App() {
     setHistoryPast((items) => [...items.slice(-49), structuredClone(frames)])
     setHistoryFuture((items) => items.slice(1)); setFrames(structuredClone(next)); setCurrent((index) => Math.min(index, next.length - 1)); setPlaying(false)
   }
-  const loadWalkSample = () => { setSampleId('walk'); setFrames(initialFrames()); setRestPose(createPose()); setThumbnails({}); setHistoryPast([]); setHistoryFuture([]); setCurrent(0); setPlaying(false) }
+  const loadWalkSample = (preset: RigPreset = rigPreset) => { setSampleId('walk'); setFrames(preset === 'quadruped' ? initialQuadrupedFrames() : initialFrames()); setRestPose(createPose()); setThumbnails({}); setHistoryPast([]); setHistoryFuture([]); setCurrent(0); setPlaying(false) }
   const importJson = async (file: File) => {
     try {
       const source = JSON.parse(await file.text()) as Record<string, unknown>
@@ -333,8 +377,8 @@ export function App() {
     <section className="workspace">
       {mobileMenuOpen && <div className="drawer-backdrop" onClick={() => setMobileMenuOpen(false)} />}
       <aside id="bone-panel" className={`bone-panel${mobileMenuOpen ? ' open' : ''}`}>
-        <div className="panel-heading"><span>{text.rig}</span><small>{text.human}</small><button className="drawer-close" aria-label={text.closeMenu} onClick={() => setMobileMenuOpen(false)}><Icon name="close" /></button></div>
-        <section className="setup-section"><button className="section-toggle" aria-expanded={setupOpen} onClick={() => setSetupOpen((open) => !open)}><span>{navigation.sceneSetup}</span><span>{setupOpen ? '⌃' : '⌄'}</span></button>{setupOpen && <div className="setup-fields"><label className="sample-picker"><span>{presets.rigPreset}</span><select value={rigPreset} onChange={(event) => { setRigPreset(event.target.value as RigPreset); setThumbnails({}) }}>{rigPresets.map((preset) => <option key={preset} value={preset}>{presets.rig[preset]}</option>)}</select></label><label className="sample-picker"><span>{text.samples}</span><select value={sampleId} onChange={(event) => { if (event.target.value === 'walk') loadWalkSample() }}><option value="walk">{text.walk}</option>{sampleId === 'custom' && <option value="custom">{text.custom}</option>}</select></label><label className="sample-picker"><span>{presets.backgroundPreset}</span><select value={backgroundPreset} onChange={(event) => { const preset = event.target.value as BackgroundPreset; setBackgroundPreset(preset); if (preset !== 'none') setStudioBackdrop('none'); setThumbnails({}) }}>{backgroundPresets.map((preset) => <option key={preset} value={preset}>{presets.background[preset]}</option>)}</select></label><label className={`sample-picker ${backgroundPreset !== 'none' ? 'disabled' : ''}`}><span>{presets.studioBackdrop}</span><select value={studioBackdrop} disabled={backgroundPreset !== 'none'} onChange={(event) => { setStudioBackdrop(event.target.value as StudioBackdrop); setThumbnails({}) }}>{studioBackdrops.map((preset) => <option key={preset} value={preset}>{presets.studio[preset]}</option>)}</select></label></div>}</section>
+        <div className="panel-heading"><span>{text.rig}</span><small>{rigPreset === 'quadruped' ? text.quadruped : text.human}</small><button className="drawer-close" aria-label={text.closeMenu} onClick={() => setMobileMenuOpen(false)}><Icon name="close" /></button></div>
+        <section className="setup-section"><button className="section-toggle" aria-expanded={setupOpen} onClick={() => setSetupOpen((open) => !open)}><span>{navigation.sceneSetup}</span><span>{setupOpen ? '⌃' : '⌄'}</span></button>{setupOpen && <div className="setup-fields"><label className="sample-picker"><span>{presets.rigPreset}</span><select value={rigPreset} onChange={(event) => { const preset = event.target.value as RigPreset; setRigPreset(preset); loadWalkSample(preset) }}>{rigPresets.map((preset) => <option key={preset} value={preset}>{presets.rig[preset]}</option>)}</select></label><label className="sample-picker"><span>{text.samples}</span><select value={sampleId} onChange={(event) => { if (event.target.value === 'walk') loadWalkSample() }}><option value="walk">{text.walk}</option>{sampleId === 'custom' && <option value="custom">{text.custom}</option>}</select></label><label className="sample-picker"><span>{presets.backgroundPreset}</span><select value={backgroundPreset} onChange={(event) => { const preset = event.target.value as BackgroundPreset; setBackgroundPreset(preset); if (preset !== 'none') setStudioBackdrop('none'); setThumbnails({}) }}>{backgroundPresets.map((preset) => <option key={preset} value={preset}>{presets.background[preset]}</option>)}</select></label><label className={`sample-picker ${backgroundPreset !== 'none' ? 'disabled' : ''}`}><span>{presets.studioBackdrop}</span><select value={studioBackdrop} disabled={backgroundPreset !== 'none'} onChange={(event) => { setStudioBackdrop(event.target.value as StudioBackdrop); setThumbnails({}) }}>{studioBackdrops.map((preset) => <option key={preset} value={preset}>{presets.studio[preset]}</option>)}</select></label></div>}</section>
         <button className="section-toggle joint-section-toggle" aria-expanded={jointsOpen} onClick={() => setJointsOpen((open) => !open)}><span>{navigation.joints}</span><span>{jointsOpen ? '⌃' : '⌄'}</span></button>
         {jointsOpen && <div className="bone-list">{(Object.entries(boneGroups) as [BoneGroup, typeof boneGroups[BoneGroup]][]).map(([group, definition]) => <div className="bone-group" key={group}>
           <div className="bone-group-heading"><button className="disclosure" aria-label={openGroups[group] ? 'Collapse' : 'Expand'} aria-expanded={openGroups[group]} onClick={() => setOpenGroups((items) => ({ ...items, [group]: !items[group] }))}>{openGroups[group] ? '⌄' : '›'}</button><button className={definition.bones.includes(selectedBone) ? 'group-selected' : ''} onClick={() => selectBone(definition.root)}>{text.groups[group]}</button></div>

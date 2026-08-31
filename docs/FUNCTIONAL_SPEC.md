@@ -43,7 +43,9 @@ Sceneは以下で構成する。
 - rear legs L/R
 - tail segments
 
-犬猫は骨格を可能な範囲で共有し、形状・比率をPreset側で変更する。
+現行prototypeは犬・猫別Presetを持たず、共通Quadrupedテンプレート1種とする。既存Human Pose schemaとの互換Adapterとして、前脚をArm chain、後脚をLeg chainへ対応させる。Tail専用Boneは持たず、尾はspineへ暫定対応する。
+
+Rig PresetメニューでQuadrupedを選ぶと専用8フレームWalkを読み込む。同側は後脚→前脚、反対側は半周期ずらし、左右対応関節の回転変化量の絶対値を揃える。Preset切替時は現在のFramesを選択RigのWalkへ置換する。
 
 ## F-03 Transform
 
@@ -129,6 +131,8 @@ Scene StateをJSONとして保存する。
 - Background
 - Text / Bubble
 - Playback settings
+
+現行JSONではRig種類を`rig.presetId`で保存する。Rig TypeとBody Presetを独立フィールドへ分離する設計は未実装。
 
 ## F-11 Export
 

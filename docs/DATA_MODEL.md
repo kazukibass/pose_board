@@ -147,6 +147,19 @@ type Actor = {
 
 v0.1 UIではActor × 1。Preset/Rigを切り替えて使用する。
 
+現行PoCのProject JSONはActor内ではなくトップレベルの`rig`に定義を保存する。
+
+```ts
+type CurrentRig = {
+  type: "primitive-rig";
+  presetId: "adult" | "slender" | "child" | "chibi4" | "chibi2" | "quadruped";
+  groups: unknown;
+  restPose: Pose;
+};
+```
+
+`quadruped`は独立したRig Typeではなく暫定的な`presetId`である。Rig Type / Body Preset分離は未実装。QuadrupedもHuman用Bone名を互換Adapterとして再利用し、前脚=Arm chain、後脚=Leg chain、尾=spineへ対応する。
+
 ## Transform3D
 
 ```ts

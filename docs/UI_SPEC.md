@@ -165,15 +165,17 @@ Pose Boardの特徴的UIとして扱う。
 
 ## Rig Preset Menu
 
-初期候補:
-- Adult Male
-- Adult Female
-- Boy
-- Girl
-- Dog
-- Cat
-- SD 2-head
+現行選択肢:
+- Adult
+- Slender adult
+- Child
 - SD 4-head
+- SD 2-head
+- Quadruped template
+
+Quadrupedは犬・猫別に分けない。現行PoCではRig TypeとBody Presetを同じメニューで扱い、Quadruped選択時は専用8フレームWalkへ切り替える。
+
+Human/Quadrupedとも、選択関節にはXYZ方向の矢印と回転リングを表示する。
 
 Mobileでは一覧を常駐させずDrawer / Sheetから選択する。
 

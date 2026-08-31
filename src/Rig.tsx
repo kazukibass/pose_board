@@ -3,7 +3,8 @@ import { useMemo } from 'react'
 import { Euler, Quaternion } from 'three'
 import type { BoneName, Pose, Rotation } from './model'
 
-export type RigPreset = 'adult' | 'slender' | 'child' | 'chibi4' | 'chibi2'
+export type HumanRigPreset = 'adult' | 'slender' | 'child' | 'chibi4' | 'chibi2'
+export type RigPreset = HumanRigPreset | 'quadruped'
 type Props = { pose: Pose; actorRotation: Rotation; selected: BoneName; onSelect: (bone: BoneName) => void; preset: RigPreset }
 type PartProps = { bone: BoneName; pose: Pose; selected: BoneName; onSelect: (bone: BoneName) => void; children: React.ReactNode }
 
@@ -98,14 +99,14 @@ function Leg({ side, pose, selected, onSelect }: Props & { side: 'left' | 'right
 
 export function Rig(props: Props) {
   const { pose, actorRotation, selected, onSelect, preset } = props
-  const profiles: Record<RigPreset, { scale: [number, number, number]; head: number }> = {
+  const profiles: Record<HumanRigPreset, { scale: [number, number, number]; head: number }> = {
     adult: { scale: [1, 1, 1], head: 1 },
     slender: { scale: [.84, 1.03, .88], head: .96 },
     child: { scale: [.78, .78, .82], head: 1.18 },
     chibi4: { scale: [.75, .68, .8], head: 1.42 },
     chibi2: { scale: [.72, .5, .78], head: 1.9 },
   }
-  const profile = profiles[preset]
+  const profile = profiles[preset as HumanRigPreset]
   const groundOffset = -2.3 * (1 - profile.scale[1])
   return <group position={[0, groundOffset, 0]} scale={profile.scale} rotation={Object.values(actorRotation) as [number, number, number]}>
     <group position={[0, -1.05, 0]} rotation={Object.values(pose.hip) as [number, number, number]}>

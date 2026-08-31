@@ -21,9 +21,11 @@ Blenderのような高機能3D制作ソフトを目指さない。必要なの�
 - プロジェクト保存・読込
 - 静止画・連番等の出力
 
-## 初期Rig候補
+## 現在のRig
 
-成人男性 / 成人女性 / 男児 / 女児 / 犬 / 猫 / 2頭身SD / 4頭身デフォルメ
+成人・標準 / 成人・細身 / 子ども / 2頭身 / 4頭身 / 共通Quadrupedテンプレート
+
+Quadrupedは犬・猫別ではなく共通素体1種類。プリセット選択時に、左右対応関節の変化量を揃えた専用8フレームWalkを読み込む。現時点ではRig TypeとBody Presetは分離せず、同じRig Presetメニューから選択する。
 
 3Dモデル素材を必須とせず、球・箱・三角/円錐・線/棒・曲線などの単純な形状で表現する。
 
@@ -51,7 +53,7 @@ v0.1では以下を扱わない。
 
 ## Development
 
-Phase 0 Technical PoC is in progress.
+Technical PoC / v0.1 release preparation is in progress.
 
 ```bash
 npm install
@@ -62,9 +64,10 @@ Production verification:
 
 ```bash
 npm test
+npm run lint
 npm run build
 ```
 
 ## Status
 
-Phase 0 / Technical PoC implementation
+v0.1 release preparation / Rig expansion

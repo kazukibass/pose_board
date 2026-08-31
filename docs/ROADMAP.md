@@ -21,8 +21,9 @@
 - FPS / Loop
 - Actor transform
 - Human preset群
-- Quadruped Rig
-- Dog / Cat preset
+- Common Quadruped Rig（prototype統合済み）
+- Quadruped 8-frame walk sample（prototype統合済み）
+- Rig Type / Body Preset UI分離（未実装）
 - SD 2-head / 4-head
 - Transparent / Solid / Image background
 - Text

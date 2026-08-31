@@ -4,6 +4,7 @@ import { ContactShadows, OrbitControls, useTexture } from '@react-three/drei'
 import { CameraHelper, Object3D, PerspectiveCamera, SRGBColorSpace, Vector2, Vector3 } from 'three'
 import type { BoneName, Pose, Rotation } from './model'
 import { Rig, type RigPreset } from './Rig'
+import { QuadrupedRig } from './QuadrupedRig'
 
 type OutputRatio = 'landscape' | 'portrait'
 export type BackgroundPreset = 'none' | 'city' | 'park' | 'room'
@@ -157,7 +158,9 @@ export function Stage({ pose, actorRotation, selected, onSelect, hint, resetView
       <directionalLight position={[4, 7, 5]} intensity={2.2} castShadow />
       <EditingCameraFov active={cameraView} fov={cameraViewFov} />
       <StageBackdrop preset={backgroundPreset} studio={studioBackdrop} />
-      <Rig pose={pose} actorRotation={actorRotation} selected={selected} onSelect={onSelect} preset={rigPreset} />
+      {rigPreset === 'quadruped'
+        ? <QuadrupedRig pose={pose} actorRotation={actorRotation} selected={selected} onSelect={onSelect} />
+        : <Rig pose={pose} actorRotation={actorRotation} selected={selected} onSelect={onSelect} preset={rigPreset} />}
       <OutputCameraGuide onCaptureReady={onCaptureReady} visible={showCamera && !cameraView} fov={outputFov} ratio={outputRatio} />
       {showCamera && !cameraView && <StudioCameraMock />}
       <ContactShadows position={[0, -2.28, 0]} opacity={.22} scale={8} blur={2.5} />

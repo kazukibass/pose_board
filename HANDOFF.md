@@ -9,42 +9,43 @@
 
 ## Current Status
 - Phase: v0.1 release preparation / Rig expansion
-- Status: mainは安定版。四足歩行共通Rigの検証ブランチ `feature/quadruped-rig` が進行中。
-- Last updated: 2026-08-26
-- Last agent: ChatGPT
+- Status: main上で共通Quadruped RigをUI・Stage・JSONへ統合。自動検証成功、手動確認は概ね完了。
+- Last updated: 2026-08-31
+- Last agent: Codex
 
-## ACTIVE BRANCH — 最初に確認すること
+## ACTIVE WORK — 最初に確認すること
 
-mainでこのファイルを読んだ次担当者は、新規実装を始める前に **`feature/quadruped-rig` をcheckoutして検証すること。**
+共通Quadruped統合後の状態。新規作業前に`git status`と直近の履歴を確認すること。
 
 ### 目的
-- Human Rigを壊さず、犬/猫で共用できるPrimitive Quadruped Rigを追加する。
+- Human Rigを壊さず、動物種を限定しない共通Primitive Quadruped Rigを追加する。
 - 犬/猫固有のPose presetは作らない。Poseはユーザーが作成する。
 - Neutralは **胴体水平 / 前後4脚を約90°下向き** とする。
 
-### branchで追加済み
+### 実装済み
 - `src/QuadrupedRig.tsx`
 - Box / Sphere / Capsule / Coneのみで構成した簡易四足素体。
 - 胴体水平。
 - 前脚2本・後脚2本はNeutral状態で垂直下向き。
 - prototypeでは既存Human Pose schemaをAdapterとして再利用し、前脚=Arm chain、後脚=Leg chainへ対応させている。
 - Head / Neck / Tail相当を最低限のPrimitiveで表現。
-
-### 重要
-**QuadrupedRig本体を追加した段階で、Stage/UIへの切替導線はまだ未接続。**
-Human専用`BoneName / Pose`をいきなり破壊的変更しないため、まずRig単体をbranchへ隔離している。
+- Stageへ接続し、既存のRig Presetメニューから「四足歩行（テンプレート）」を選択可能。
+- 四足選択時は専用8フレームWalkへ切り替わる。同側は後脚→前脚、反対側は半周期ずらし、左右対応関節の変化量の絶対値を揃えている。
+- Humanと同じ関節選択・XYZ回転UIを再利用し、選択関節へ回転リングとXYZ矢印を表示。
+- Project JSONの`rig.presetId`に`quadruped`を保存し、読込時にも復元。
+- Rig TypeとBody PresetのUI分離は未実装。現状は単一のPresetメニューで切り替える。
 
 ## What
 - `docs/ARCHITECTURE.md` / `docs/DATA_MODEL.md`へScene Layer Systemを反映済み。
 - 2D Overlay / 3D Stage / 2D Backgroundのサンドイッチ構造を採用。
 - Overlay/Backgroundのみ子Layerを持ち、3D Stageを跨ぐ並べ替えは禁止。
 - v0.1の3D Actor UIは1体。
-- `feature/quadruped-rig`をmainから分岐し、共通Quadruped prototypeを追加。
+- mainの作業ツリーで共通Quadruped prototypeをStage/UI/保存読込へ統合。
 
 ## Why
 Pose BoardはBlender化させず、簡単な素体でPoseとコマを素早く作ることを優先する。四足も犬/猫を別々に作り込まず共通Rigを1つ用意する。
 
-現行のFrame / JSON / Undo / PlaybackはHuman専用Pose schemaを前提としているため、全面改修をmainへ直接入れずbranchで段階検証する。
+現行のFrame / Undo / Playbackとの互換性を優先し、QuadrupedもHuman用Pose schemaをAdapterとして再利用している。
 
 ## Where
 mainで読む順:
@@ -54,48 +55,39 @@ mainで読む順:
 4. `docs/DATA_MODEL.md`
 5. `docs/ROADMAP.md`
 
-Quadruped検証:
-1. checkout `feature/quadruped-rig`
-2. `src/QuadrupedRig.tsx`
-3. `src/Rig.tsx`
-4. `src/Stage.tsx`
-5. `src/model.ts`
-6. `src/App.tsx`
+Quadruped実装:
+1. `src/QuadrupedRig.tsx`
+2. `src/Rig.tsx`
+3. `src/Stage.tsx`
+4. `src/model.ts`
+5. `src/App.tsx`
 
 ## What's Next
-`feature/quadruped-rig`で以下を実施する。
-
-1. QuadrupedRigをStageへ接続。
-2. Scene設定へHuman / Quadruped切替を追加。
-3. Rig TypeとBody Presetを分離したUIにする。
-4. HumanではAdult / Slender / Child / Chibi4 / Chibi2を維持。
-5. Quadrupedは共通素体1種類から開始。
-6. Rig TypeのProject JSON保存場所を決め、旧JSON互換を維持。
-7. Human → Quadruped → HumanでHuman Poseが壊れないことを確認。
-8. Neutralが「胴体水平・四脚90°下向き」になっていることを目視確認。
-9. `npm test` / `npm run lint` / `npm run build`。
-10. Desktop/Mobileで切替UIを確認。
-11. 検証結果をHANDOFFへ追記してからPR/merge判断。
+1. Quadrupedの左右振幅とJSON round-tripを保証する自動テストを追加。
+2. Human → Quadruped → Human切替時の編集データ置換仕様を確定する。現状はPreset切替時にWalk全8フレームを読み直す。
+3. 旧JSON（`rig.presetId`なし）がHumanとして確実に復元されることを確認・テストする。
+4. PNG/ZIP出力とDesktop/Mobile Drawerでの切替を最終確認する。
+5. Rig TypeとBody Presetを分離するかは別タスクとして設計する（現時点では未実装）。
 
 ## Verification Required
-Quadruped branchは **未検証・未マージ**。
-
-必須:
-- Build / Lint / Test
-- Human Rig回帰
-- Quadruped Neutral Pose
-- Joint selection / rotation
-- Frame duplicate / playback
-- JSON save/load compatibility
-- PNG/ZIP export
-- Mobile DrawerからRig切替
+- `npm test`: 成功
+- `npm run lint`: 成功
+- `npm run build`: 成功
+- 手動確認: ユーザー確認で概ねOK。四足時の回転矢印欠落は修正済み。
+- 未完了: 左右振幅・JSON互換の自動テスト、PNG/ZIP、Desktop/Mobileの最終回帰確認。
 
 ## Known Issues / Open Questions
 - `BoneName / Pose`は現在Human専用。prototypeでは互換AdapterとしてHuman Bone名を再利用。
 - 正式版でRigType別Bone schemaへ分離するか、共通semantic chain層を置くかはbranch検証後に決める。
 - Tail専用Boneは現行schemaにない。Tail編集はv0.1必須にしない。
 - 犬/猫別の体型Presetは今回対象外。
+- Preset切替は現在のFrame編集内容を保持せず、選択RigのWalkサンプルへ置換する。
+- `rig.presetId`が欠落または未知値の場合、読込処理は現在選択中のRigを明示的にHumanへ戻さない。この旧JSON fallbackは要改善。
 - Pose Lab / IKはv0.1公開後のExperimental Feature候補。
+
+## Changed Files (Quadruped integration)
+- Code: `src/App.tsx`, `src/Rig.tsx`, `src/Stage.tsx`, `src/QuadrupedRig.tsx`
+- Docs: `HANDOFF.md`, `README.md`, `docs/ARCHITECTURE.md`, `docs/DATA_MODEL.md`, `docs/FUNCTIONAL_SPEC.md`, `docs/REQUIREMENTS.md`, `docs/ROADMAP.md`, `docs/UI_SPEC.md`
 
 ## Release Roadmap
 v0.1公開まで:
