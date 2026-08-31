@@ -12,7 +12,7 @@
 - Status: main上で共通Quadruped RigをUI・Stage・JSONへ統合。自動検証成功、手動確認は概ね完了。
 - Last updated: 2026-08-31
 - Last agent: Codex
-- GitHub Pages: workflow added; GitHub repository Pages source still needs to be set to **GitHub Actions**, then verify the first deployment at `https://kazukibass.github.io/pose_board/`.
+- GitHub Pages: GitHub Actions方式で公開済み。初回deploy成功、`https://kazukibass.github.io/pose_board/`のHTTP 200を確認済み。
 
 ## ACTIVE WORK — 最初に確認すること
 
@@ -76,7 +76,7 @@ Quadruped実装:
 - `npm run build`: 成功
 - 手動確認: ユーザー確認で概ねOK。四足時の回転矢印欠落は修正済み。
 - 未完了: 左右振幅・JSON互換の自動テスト、PNG/ZIP、Desktop/Mobileの最終回帰確認。
-- 公開確認: `main` push後にGitHub ActionsのDeploy GitHub Pagesが成功すること、公開URLと`?from=portfolio`時の共通ナビを実URLでDesktop/Mobile確認すること。
+- 公開確認: GitHub ActionsのDeploy GitHub Pagesと公開URLのHTTP応答は確認済み。`?from=portfolio`時の共通ナビは実URLでDesktop/Mobileの目視確認が残る。
 
 ## Known Issues / Open Questions
 - `BoneName / Pose`は現在Human専用。prototypeでは互換AdapterとしてHuman Bone名を再利用。
