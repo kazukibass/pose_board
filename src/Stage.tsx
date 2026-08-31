@@ -18,10 +18,11 @@ const backdropHeight = 2 * backdropDistance * Math.tan(widestOutputFov * Math.PI
 const backdropWidth = backdropHeight * 16 / 9
 
 function StageBackdrop({ preset, studio }: { preset: BackgroundPreset; studio: StudioBackdrop }) {
+  const assetBase = import.meta.env.BASE_URL
   const textures = useTexture([
-    '/backgrounds/local-city-street.png',
-    '/backgrounds/neighborhood-park.png',
-    '/backgrounds/apartment-living-room.png',
+    `${assetBase}backgrounds/local-city-street.png`,
+    `${assetBase}backgrounds/neighborhood-park.png`,
+    `${assetBase}backgrounds/apartment-living-room.png`,
   ])
   textures.forEach((texture) => { texture.colorSpace = SRGBColorSpace })
   const imageIndex = { city: 0, park: 1, room: 2 }[preset as 'city' | 'park' | 'room']

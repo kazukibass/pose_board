@@ -13,6 +13,7 @@
 - Last updated: 2026-08-31
 - Last agent: Codex
 - GitHub Pages: GitHub Actions方式で公開済み。初回deploy成功、`https://kazukibass.github.io/pose_board/`のHTTP 200を確認済み。
+- Pages path fix: 背景画像は`import.meta.env.BASE_URL`経由で参照する。`/backgrounds/...`の絶対パスはProject Pagesで404となり白画面を起こすため使用しない。
 
 ## ACTIVE WORK — 最初に確認すること
 
