@@ -68,6 +68,16 @@ npm run lint
 npm run build
 ```
 
+## Public preview
+
+The production build is deployed to GitHub Pages when `main` is pushed:
+[https://kazukibass.github.io/pose_board/](https://kazukibass.github.io/pose_board/)
+
+The shared portfolio navigation is opt-in. Open the app with
+`?from=portfolio` to enable it; direct visits retain the standalone Pose Board
+interface. Before announcing the preview, verify the deployed URL, including
+desktop and mobile navigation, after the first successful Pages workflow.
+
 ## Status
 
 v0.1 release preparation / Rig expansion

@@ -12,6 +12,7 @@
 - Status: main上で共通Quadruped RigをUI・Stage・JSONへ統合。自動検証成功、手動確認は概ね完了。
 - Last updated: 2026-08-31
 - Last agent: Codex
+- GitHub Pages: workflow added; GitHub repository Pages source still needs to be set to **GitHub Actions**, then verify the first deployment at `https://kazukibass.github.io/pose_board/`.
 
 ## ACTIVE WORK — 最初に確認すること
 
@@ -75,6 +76,7 @@ Quadruped実装:
 - `npm run build`: 成功
 - 手動確認: ユーザー確認で概ねOK。四足時の回転矢印欠落は修正済み。
 - 未完了: 左右振幅・JSON互換の自動テスト、PNG/ZIP、Desktop/Mobileの最終回帰確認。
+- 公開確認: `main` push後にGitHub ActionsのDeploy GitHub Pagesが成功すること、公開URLと`?from=portfolio`時の共通ナビを実URLでDesktop/Mobile確認すること。
 
 ## Known Issues / Open Questions
 - `BoneName / Pose`は現在Human専用。prototypeでは互換AdapterとしてHuman Bone名を再利用。
@@ -88,6 +90,12 @@ Quadruped実装:
 ## Changed Files (Quadruped integration)
 - Code: `src/App.tsx`, `src/Rig.tsx`, `src/Stage.tsx`, `src/QuadrupedRig.tsx`
 - Docs: `HANDOFF.md`, `README.md`, `docs/ARCHITECTURE.md`, `docs/DATA_MODEL.md`, `docs/FUNCTIONAL_SPEC.md`, `docs/REQUIREMENTS.md`, `docs/ROADMAP.md`, `docs/UI_SPEC.md`
+
+## Public Preview Configuration
+- `vite.config.ts` uses `/pose_board/` only for production builds; local Vite development remains rooted at `/`.
+- `.github/workflows/deploy-pages.yml` runs install, test, lint, and build before deploying `dist` through GitHub Pages on `main` pushes or manual dispatch.
+- `index.html` loads the portfolio shell. It activates only with `?from=portfolio`; desktop uses the shared 56px nav and mobile uses the slim brand button, without changing direct-access UI.
+- The landing-page repository is intentionally not changed in this repository task.
 
 ## Release Roadmap
 v0.1公開まで:
