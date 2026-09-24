@@ -7,6 +7,30 @@
 
 ---
 
+## 2026-09-24 — kazuki-ui共通ナビ契約の適用
+
+### What / Why
+- アプリ固有の配色・フォント・配置を変えず、上部ナビ、モバイルドロワー、下部プレイヤーへkazuki-uiの共通状態契約を付与した。
+- `placement / layout / collapse / state / surface`をDOM属性として明示し、他の個人開発ツールと同じ骨格で扱えるようにした。
+- モバイルドロワーの開閉時間を共通トークンへ接続した。
+
+### Where / Changed Files
+- `src/App.tsx`: app header、Rig drawer、playback barへ共通ナビ属性を追加。
+- `src/styles.css`: 共通motion・hit-targetトークンを追加し、drawer transitionへ適用。
+- `HANDOFF.md`: 本記録。
+
+### Verification
+- `npm test`: 2 tests passed。
+- `npm run lint`: passed。
+- `npm run build`: passed。既存のchunk size warningのみ。
+- `git diff --check`: passed。
+
+### What's Next / Known Issues
+- 実機でモバイルdrawerと下部playerのsafe areaを最終目視する。
+- 今回は契約付与のみ。Pose Board固有の色、レイアウト、操作順、保存データには変更なし。
+
+---
+
 ## Current Status
 - Phase: v0.1 release preparation / Rig expansion
 - Status: main上で共通Quadruped RigをUI・Stage・JSONへ統合。自動検証成功、手動確認は概ね完了。
