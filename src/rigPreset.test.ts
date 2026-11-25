@@ -10,9 +10,9 @@ describe('project rig preset import', () => {
     },
   )
 
-  it.each([undefined, null, 'future-rig', '', 0, {}, ['quadruped']])(
-    'falls back to the adult rig for missing or unrecognized preset %j',
-    (preset) => {
+  it.each([undefined, null, 'future-rig', '', 0, {}, ['quadruped']].map((preset) => ({ preset })))(
+    'falls back to the adult rig for missing or unrecognized preset $preset',
+    ({ preset }) => {
       expect(normalizeRigPreset(preset)).toBe('adult')
     },
   )
