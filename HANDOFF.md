@@ -18,7 +18,8 @@
 - `src/App.tsx`: インポート時に正規化した値を必ず設定。
 - `src/rigPreset.test.ts`: 全6種類・欠落・未知値・型違い・旧形式の回帰ケース。
 - `docs/DATA_MODEL.md`: 旧形式の復元規則を追記。
-- `.github/workflows/ci.yml`: PR時のbase鮮度検査・test/lint/build。読み取り専用でdeployなし。
+- `.github/workflows/ci.yml`: PR時のbase鮮度検査・test/lint/buildとChromium UI回帰（Ubuntu 24.04、Playwright 1.57.0固定）。読み取り専用でdeployなし。
+- `scripts/ui-smoke.mjs`: ローカル配信・合成fixtureのみで旧JSONから人型へ復元、実JSON出力往復・PNG/ZIP内容・390px表示を検査。WebGL2が無い場合はPNG/ZIPを明示的にskipし、成功扱いしない。
 - `HANDOFF.md`: 作業記録。
 
 ### Verification
