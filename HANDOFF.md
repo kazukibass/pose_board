@@ -18,13 +18,14 @@
 - `src/App.tsx`: インポート時に正規化した値を必ず設定。
 - `src/rigPreset.test.ts`: 全6種類・欠落・未知値・型違い・旧形式の回帰ケース。
 - `docs/DATA_MODEL.md`: 旧形式の復元規則を追記。
+- `.github/workflows/ci.yml`: PR時のbase鮮度検査・test/lint/build。読み取り専用でdeployなし。
 - `HANDOFF.md`: 作業記録。
 
 ### Verification
 - 対象main: `0a20f396`（9/24の共通ナビPR #2 マージ）。同内容の公開版で、複製・追加で8→10コマ、X回転35°、再生/停止・削除で9コマ、四足プリセットで8コマ、背景・スタジオ設定の選択をクラウドブラウザから確認した。
 - Project JSON実出力を解析し、8コマ・`quadruped`・背景なし・greenを確認。読み込み往復は未確認。
 - クラウドChromeはWebGLが無効で3D描画ができず、PNG/ZIP内容の検証は未完了。ローカルChromiumも起動権限エラーのため利用不可。
-- 今回の変更では正規化の入力・出力をJavaScriptで確認した。実行環境が利用できなくなったため、Vitest / Lint / BuildはPRレビュー前に別環境で実行すること。GitHub Pages workflowはmain push/手動起動のみ。
+- 今回の変更では正規化の入力・出力をJavaScriptで確認した。実行環境が利用できなくなったため、Vitest / Lint / Buildは新設のPR CIで確認する。既存のGitHub Pages workflow（main push/手動起動）は未変更。CIの結果はPRを参照すること。
 - UI、PNG/ZIPの処理、共通ナビ、安全域のCSSは未変更。実機での表示完了扱いにはしない。
 
 ### What's Next / Known Issues
