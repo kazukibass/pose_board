@@ -160,6 +160,8 @@ type CurrentRig = {
 
 `quadruped`は独立したRig Typeではなく暫定的な`presetId`である。Rig Type / Body Preset分離は未実装。QuadrupedもHuman用Bone名を互換Adapterとして再利用し、前脚=Arm chain、後脚=Leg chain、尾=spineへ対応する。
 
+Project JSONの読込では既知の `rig.presetId` はそのまま保持する。旧形式のように値が欠落する場合と未知値の場合は、現在選択中のRigにかかわらず既定の人型 `adult` として復元する。
+
 ## Transform3D
 
 ```ts

@@ -7,6 +7,35 @@
 
 ---
 
+## 2026-11-25 — 旧Project JSONのRig復元修正（PRレビュー待ち）
+
+### What / Why
+- `rig.presetId` が欠落または未対応のProject JSONを読み込んだとき、直前に選択していた四足Rig等を引き継ぐ既知不具合を修正。
+- 既存の6種類のpreset値は保持し、欠落・不正値のみ既定の人型 `adult` に確定する。既存のFrameデータは置換せずインポートする。
+
+### Where / Changed Files
+- `src/rigPreset.ts`: UIのpreset一覧と読み込み時の正規化を共有。
+- `src/App.tsx`: インポート時に正規化した値を必ず設定。
+- `src/rigPreset.test.ts`: 全6種類・欠落・未知値・型違い・旧形式の回帰ケース。
+- `docs/DATA_MODEL.md`: 旧形式の復元規則を追記。
+- `.github/workflows/ci.yml`: PR時のbase鮮度検査・test/lint/buildとChromium UI回帰（Ubuntu 24.04、Playwright 1.57.0固定）。読み取り専用でdeployなし。
+- `scripts/ui-smoke.mjs`: ローカル配信・合成fixtureのみで旧JSONから人型へ復元、実JSON出力往復・PNG/ZIP内容・390px表示を検査。WebGL2が無い場合はPNG/ZIPを明示的にskipし、成功扱いしない。
+- `HANDOFF.md`: 作業記録。
+
+### Verification
+- 対象main: `0a20f396`（9/24の共通ナビPR #2 マージ）。同内容の公開版で、複製・追加で8→10コマ、X回転35°、再生/停止・削除で9コマ、四足プリセットで8コマ、背景・スタジオ設定の選択をクラウドブラウザから確認した。
+- Project JSON実出力を解析し、8コマ・`quadruped`・背景なし・greenを確認。読み込み往復は未確認。
+- クラウドChromeはWebGLが無効で3D描画ができず、PNG/ZIP内容の検証は未完了。ローカルChromiumも起動権限エラーのため利用不可。
+- 今回の変更では正規化の入力・出力をJavaScriptで確認した。実行環境が利用できなくなったため、Vitest / Lint / Buildは新設のPR CIで確認する。既存のGitHub Pages workflow（main push/手動起動）は未変更。CIの結果はPRを参照すること。
+- UI、PNG/ZIPの処理、共通ナビ、安全域のCSSは未変更。実機での表示完了扱いにはしない。
+
+### What's Next / Known Issues
+- PR上の変更を `npm ci` / `npm test` / `npm run lint` / `npm run build` で確認し、旧JSONを四足選択後に読んで人型へ戻ることを実機確認後レビュー。
+- 3D対応ブラウザでPNG/ZIP内容の確認、Desktop/Mobile Drawerと下部Playerのsafe area最終目視、全presetのJSON往復を行う。
+- 左右振幅の自動検証や、preset切替で既存Frameを置換する仕様の判断は別作業のまま。
+
+---
+
 ## 2026-09-24 — kazuki-ui共通ナビ契約の適用
 
 ### What / Why
