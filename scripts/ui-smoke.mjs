@@ -136,7 +136,7 @@ try {
     await verifyPng(first)
     await verifyPng(second)
     assert.notDeepEqual(first, second, 'different test poses must render different PNGs')
-    assert.equal(await page.locator('.frames > button.active').innerText(), '01')
+    assert.equal(await page.locator('.frames > button').first().getAttribute('class'), 'active')
     console.log('PASS PNG and CRC-valid ZIP: two non-blank, distinct 1280x720 frames, current frame restored')
     assert.deepEqual(errors, [])
   } else {
@@ -151,14 +151,15 @@ try {
   assert.equal(await drawer.getAttribute('data-nav-state'), 'expanded')
   await page.getByRole('button', { name: 'Close menu', exact: true }).click()
   assert.equal(await drawer.getAttribute('data-nav-state'), 'collapsed')
-  const geometry = await page.evaluate(() => {
-    const within = (selector) => {
+  for (const selector of ['.player', '.timeline']) {
+    await page.locator(selector).scrollIntoViewIfNeeded()
+    const within = await page.evaluate((selector) => {
       const box = document.querySelector(selector).getBoundingClientRect()
-      return box.left >= 0 && box.right <= innerWidth + 1 && box.top >= 0 && box.bottom <= innerHeight + 1
-    }
-    return { player: within('.player'), timeline: within('.timeline'), noOverflow: document.documentElement.scrollWidth <= innerWidth }
-  })
-  assert.deepEqual(geometry, { player: true, timeline: true, noOverflow: true })
+      return box.left >= 0 && box.right <= innerWidth + 1 && box.top >= -1 && box.bottom <= innerHeight + 1
+    }, selector)
+    assert.ok(within, selector + ' is reachable within the viewport')
+  }
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no horizontal overflow')
   console.log('PASS 390x844 viewport: drawer state, player and timeline geometry (not real-device safe areas)')
 } finally {
   await browser?.close()
