@@ -3,6 +3,7 @@ import JSZip from 'jszip'
 import { flushSync } from 'react-dom'
 import { Stage, type BackgroundPreset, type StudioBackdrop } from './Stage'
 import type { RigPreset } from './Rig'
+import { normalizeRigPreset, rigPresets } from './rigPreset'
 import { Icon } from './icons'
 import { Axis, BoneName, boneLabels, boneNames, clonePose, createPose, createRotation, makeId, type Frame, type Pose, type Rotation } from './model'
 
@@ -53,7 +54,6 @@ const navigationLabels = {
   ja: { file: 'ファイル', project: 'プロジェクト', images: '画像出力', sceneSetup: 'シーン設定', joints: '関節選択' },
 } as const
 
-const rigPresets: RigPreset[] = ['adult', 'slender', 'child', 'chibi4', 'chibi2', 'quadruped']
 const backgroundPresets: BackgroundPreset[] = ['none', 'city', 'park', 'room']
 const studioBackdrops: StudioBackdrop[] = ['none', 'white', 'gray', 'green']
 
@@ -283,7 +283,7 @@ export function App() {
       const camera = Array.isArray(source.cameras) && source.cameras[0] && typeof source.cameras[0] === 'object' ? source.cameras[0] as Record<string, unknown> : {}
       if (typeof camera.fov === 'number' && Number.isFinite(camera.fov) && camera.fov > 0) setOutputZoom(Math.max(.6, Math.min(2, 45 / camera.fov)))
       if (camera.ratio === 'landscape' || camera.ratio === 'portrait') setOutputRatio(camera.ratio)
-      if (rigPresets.includes(rig.presetId as RigPreset)) setRigPreset(rig.presetId as RigPreset)
+      setRigPreset(normalizeRigPreset(rig.presetId))
       if (backgroundPresets.includes(source.backgroundPreset as BackgroundPreset)) {
         const importedBackground = source.backgroundPreset as BackgroundPreset
         setBackgroundPreset(importedBackground)
