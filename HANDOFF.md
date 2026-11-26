@@ -7,7 +7,28 @@
 
 ---
 
-## 2026-11-25 — 旧Project JSONのRig復元修正（PRレビュー待ち）
+## 2026-11-26 — 全6種Rig PresetのProject JSON往復回帰
+
+### What / Why
+- 既存の読み取り専用PR CIのChromium UI smokeを拡張し、`adult` / `slender` / `child` / `chibi4` / `chibi2` / `quadruped`をそれぞれメニューから選択する。
+- 8コマのWalk例から複製・関節回転・全身回転をUI操作し、実際にProject JSONをダウンロードする。別presetへ切り替えてからファイル選択で読み込み、9コマすべて、編集前の既存コマ、複製ID、編集値、rig/rest pose、カメラ・再生・背景設定の保持を再出力JSONと照合する。
+- `preset`の識別子だけの単体テストでは見落とす、実際の保存・読込時にWalk例へ戻る誤動作やFrameの意図しない置換を回帰検査する。
+
+### Where / Changed Files
+- `scripts/ui-smoke.mjs`: 全presetのUI往復を追加。既存の旧JSON復元、PNG/ZIP実出力、390×844 viewport検証を維持。
+- `HANDOFF.md`: 作業記録と前回PRの完了状況を更新。
+
+### Verification
+- 対象main: `2909d55`（PR#3 merge）。テスト・Lint・Build・Chromium UI smokeは既存のPR checks workflowで実行し、結果はPRを参照。
+- 合成データとローカルビルドのみを使用。アプリ本体、保存形式、preset切替時のWalk例置換仕様、既存workflowの権限・配置は変更しない。
+
+### What's Next / Known Issues
+- iPhone実機のsafe area、3D描画の目視、操作性を確認する。Chromiumの390×844のみではiPhone実機確認とみなさない。
+- Rig切替時に編集中Frameを維持するか、Rig TypeとBody Presetを分けるかは引き続き別の設計判断とする。
+
+---
+
+## 2026-11-25 — 旧Project JSONのRig復元修正（PR#3 merge済み）
 
 ### What / Why
 - `rig.presetId` が欠落または未対応のProject JSONを読み込んだとき、直前に選択していた四足Rig等を引き継ぐ既知不具合を修正。
@@ -27,11 +48,11 @@
 - Project JSON実出力を解析し、8コマ・`quadruped`・背景なし・greenを確認。読み込み往復は未確認。
 - クラウドChromeはWebGLが無効で3D描画ができず、PNG/ZIP内容の検証は未完了。ローカルChromiumも起動権限エラーのため利用不可。
 - 今回の変更では正規化の入力・出力をJavaScriptで確認した。実行環境が利用できなくなったため、Vitest / Lint / Buildは新設のPR CIで確認する。既存のGitHub Pages workflow（main push/手動起動）は未変更。CIの結果はPRを参照すること。
+- PR#3はmerge済み（`2909d55`）。PR checks run 45576485594で16テスト・Lint・Build、WebGL2 Chromiumの旧JSON復元・実JSON往復、非空・異なる1280×720 PNG2枚とCRC-valid ZIP・現在コマ復元、390×844表示を確認した。
 - UI、PNG/ZIPの処理、共通ナビ、安全域のCSSは未変更。実機での表示完了扱いにはしない。
 
 ### What's Next / Known Issues
-- PR上の変更を `npm ci` / `npm test` / `npm run lint` / `npm run build` で確認し、旧JSONを四足選択後に読んで人型へ戻ることを実機確認後レビュー。
-- 3D対応ブラウザでPNG/ZIP内容の確認、Desktop/Mobile Drawerと下部Playerのsafe area最終目視、全presetのJSON往復を行う。
+- 旧JSON復元・PNG/ZIP出力・390×844 viewportはChromium CIで確認済み。Desktop/Mobile Drawerと下部Playerのsafe area最終目視、全presetのJSON往復を続ける。
 - 左右振幅の自動検証や、preset切替で既存Frameを置換する仕様の判断は別作業のまま。
 
 ---
@@ -138,7 +159,7 @@ Quadruped実装:
 - Tail専用Boneは現行schemaにない。Tail編集はv0.1必須にしない。
 - 犬/猫別の体型Presetは今回対象外。
 - Preset切替は現在のFrame編集内容を保持せず、選択RigのWalkサンプルへ置換する。
-- `rig.presetId`が欠落または未知値の場合、読込処理は現在選択中のRigを明示的にHumanへ戻さない。この旧JSON fallbackは要改善。
+- `rig.presetId`が欠落または未知値の場合の旧JSON fallbackはPR#3で修正済み（`adult`へ戻す）。
 - Pose Lab / IKはv0.1公開後のExperimental Feature候補。
 
 ## Changed Files (Quadruped integration)

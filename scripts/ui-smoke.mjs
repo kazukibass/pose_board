@@ -54,18 +54,18 @@ try {
       await fileMenu.locator('summary').click()
     }
   }
-  const load = async (filename, buffer) => {
+  const load = async (filename, buffer, expected = { preset: 'adult', frames: 2, fps: '4', loop: false }) => {
     await openFileMenu()
     const [chooser] = await Promise.all([
       page.waitForEvent('filechooser'),
       page.getByRole('button', { name: 'Load JSON', exact: true }).click(),
     ])
     await chooser.setFiles({ name: filename, mimeType: 'application/json', buffer })
-    await page.waitForFunction(() => document.querySelectorAll('.frames > button').length === 2)
-    assert.equal(await bodyPreset.inputValue(), 'adult')
-    assert.equal(await page.locator('.frames > button').count(), 2)
-    assert.equal(await page.getByRole('combobox', { name: 'Frames per second' }).inputValue(), '4')
-    assert.equal(await page.getByRole('checkbox', { name: 'Loop' }).isChecked(), false)
+    await page.waitForFunction((count) => document.querySelectorAll('.frames > button').length === count, expected.frames)
+    assert.equal(await bodyPreset.inputValue(), expected.preset)
+    assert.equal(await page.locator('.frames > button').count(), expected.frames)
+    assert.equal(await page.getByRole('combobox', { name: 'Frames per second' }).inputValue(), expected.fps)
+    assert.equal(await page.getByRole('checkbox', { name: 'Loop' }).isChecked(), expected.loop)
   }
   const download = async (name) => {
     await openFileMenu()
@@ -142,6 +142,52 @@ try {
   } else {
     console.log('::warning::SKIPPED PNG/ZIP rendering checks: WebGL2 unavailable on this runner')
   }
+
+  // Exercise the real editor/file chooser/download for every supported preset,
+  // not only the normalization helper. Add and edit a duplicated frame, then
+  // deliberately switch away so unchanged UI state or a reloaded walk sample
+  // cannot masquerade as a successful restore.
+  const presets = ['adult', 'slender', 'child', 'chibi4', 'chibi2', 'quadruped']
+  assert.deepEqual(await bodyPreset.locator('option').evaluateAll((options) => options.map((option) => option.value)), presets)
+  for (const [index, preset] of presets.entries()) {
+    const other = preset === 'adult' ? 'quadruped' : 'adult'
+    if (await bodyPreset.inputValue() === preset) await bodyPreset.selectOption(other)
+    await bodyPreset.selectOption(preset)
+    assert.equal(await bodyPreset.inputValue(), preset)
+    assert.equal(await page.locator('.frames > button').count(), 8)
+    const initial = JSON.parse((await download('Project JSON')).toString('utf8'))
+    assert.equal(initial.rig.presetId, preset)
+    assert.equal(initial.frames.length, 8)
+
+    await page.getByRole('button', { name: 'Duplicate', exact: true }).click()
+    assert.equal(await page.locator('.frames > button').count(), 9)
+    const jointDegrees = 21 + index
+    const actorDegrees = -31 - index
+    await page.getByRole('spinbutton', { name: 'X rotation', exact: true }).fill(String(jointDegrees))
+    await page.getByRole('spinbutton', { name: 'Whole body Y rotation', exact: true }).fill(String(actorDegrees))
+    const saved = await download('Project JSON')
+    const project = JSON.parse(saved.toString('utf8'))
+    assert.equal(project.rig.presetId, preset)
+    assert.equal(project.frames.length, 9)
+    assert.deepEqual(project.frames.filter((_, i) => i !== 1), initial.frames, 'editing a duplicate must not alter the original frames')
+    const duplicate = project.frames[1]
+    assert.ok(duplicate.id && !initial.frames.some((frame) => frame.id === duplicate.id), 'duplicate must have its own ID')
+    assert.ok(Math.abs(duplicate.pose.leftUpperArm.x - jointDegrees * Math.PI / 180) < 1e-12)
+    assert.ok(Math.abs(duplicate.actorRotation.y - actorDegrees * Math.PI / 180) < 1e-12)
+
+    await bodyPreset.selectOption(other)
+    assert.equal(await bodyPreset.inputValue(), other)
+    assert.equal(await page.locator('.frames > button').count(), 8)
+    await load(`${preset}.json`, saved, { preset, frames: 9, fps: String(project.playback.fps), loop: project.playback.loop })
+    assert.equal(await page.locator('.frames > button').first().getAttribute('class'), 'active')
+    const restored = JSON.parse((await download('Project JSON')).toString('utf8'))
+    for (const key of ['rotationUnit', 'rig', 'frames', 'playback', 'cameras', 'backgroundPreset', 'studioBackdrop']) {
+      assert.deepEqual(restored[key], project[key], `${preset}: ${key} must survive save/load`)
+    }
+    console.log(`PASS ${preset}: actual JSON round trip from different preset, all 9 frames and edited joint/body rotation retained`)
+  }
+  console.log(`PASS all ${presets.length} rig presets`)
+  if (webgl) assert.deepEqual(errors, [])
 
   // This is viewport-only emulation, not iPhone hardware/safe-area validation.
   if (await fileMenu.getAttribute('open') !== null) await fileMenu.locator('summary').click()
